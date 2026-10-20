@@ -1,0 +1,4 @@
+{
+  "rewrites": [{ "source": "/", "destination": "/pylon-form-builder.html" }],
+  "headers": [{ "source": "/(.*)", "headers": [{ "key": "X-Content-Type-Options", "value": "nosniff" }] }]
+}
