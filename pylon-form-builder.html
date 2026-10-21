@@ -344,6 +344,7 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 textarea.ctl{height:auto;min-height:34px;padding:7px 10px;resize:none;line-height:1.45;transition:min-height var(--med) var(--ease),border-color var(--fast),box-shadow var(--fast)}
 textarea.ctl:focus,textarea.ctl.has{min-height:68px}
 textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background:var(--panel-2);white-space:pre;tab-size:2;resize:vertical}
+textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
 .selw{position:relative;min-width:0}
 .selw select{appearance:none;-webkit-appearance:none;padding-right:28px;cursor:pointer;text-overflow:ellipsis}
 .selw::after{content:"";position:absolute;right:11px;top:11px;width:6px;height:6px;border-right:1.5px solid var(--t3);border-bottom:1.5px solid var(--t3);transform:rotate(45deg);pointer-events:none}
@@ -713,7 +714,7 @@ textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background
       <button role="tab" aria-selected="true" data-tab="form">Form</button>
       <button role="tab" aria-selected="false" data-tab="brand">Brand</button>
       <button role="tab" aria-selected="false" data-tab="style">Style</button>
-      <button role="tab" aria-selected="false" data-tab="code">Code</button>
+      <button role="tab" aria-selected="false" data-tab="code">Embed</button>
     </div>
     <div class="insp scroll" id="insp"></div>
     <div class="resizer" data-side="right" aria-hidden="true"></div>
@@ -883,8 +884,12 @@ function detach(ref){ const list = parentList(ref); const i = list.findIndex(x=>
 function reId(o){ if(Array.isArray(o)) return o.forEach(reId); if(o && typeof o==='object'){ if(o.id) o.id = id(o.id.split('_')[0]); Object.values(o).forEach(reId); } }
 function fieldOptions(f){ if(f.optsrc==='states') return US_STATES.map(s=>({id:'st_'+slug(s), label:s, value:slug(s)})); return f.options; }
 function mapLabel(m){ const f = allFields().find(x=>x.map===m); return f ? f.label : m; }
-function exportForm(){ return { name:state.name, brand:state.brand, style:state.style, styles:state.styles, sections:state.sections.map(s=>({ title:s.title, screens:s.screens.map(x=>({ title:x.title, description:x.description, conditions:x.conditions, fields:x.fields.map(f=>({ label:f.label, type:f.type, required:f.required, description:f.description, map:f.map, validation:f.validation, width:f.width, remember:f.remember, optsrc:f.optsrc, options:f.options.map(o=>({label:o.label,value:o.value})), conditions:f.conditions, appearance:f.appearance, styleRef:f.styleRef })) })) })) }; }
-function importForm(j){ if(!Array.isArray(j.sections)) throw new Error('needs a "sections" array'); const next = { name:j.name||state.name, brand:{...state.brand, ...(j.brand||{})}, style:{...state.style, ...(j.style||{})}, styles:j.styles||state.styles||[], sections:j.sections.map(s=>({ id:id('sec'), title:s.title||'Section', open:false, screens:(s.screens||[]).map(x=>({ id:id('s'), title:x.title||'Screen', description:x.description||'', conditions:x.conditions||[], open:false, fields:(x.fields||[]).map(f=>({ id:id('f'), label:f.label||'Question', type:TYPES[f.type]?f.type:'text', required:f.required!==false, description:f.description||'', map:f.map||'', validation:f.validation||'none', width:f.width||'auto', remember:f.remember!==false, optsrc:f.optsrc, options:(f.options||[]).map(o=>({id:id('o'),label:o.label,value:o.value??slug(o.label)})), conditions:f.conditions||[], appearance:f.appearance, styleRef:f.styleRef })) })) })) }; if(!next.sections.length) throw new Error('at least one section is required'); state = next; state.sections[0].open = true; sel = { kind:'screen', id: state.sections[0].screens[0]?.id }; }
+function exportForm(){ return { name:state.name, brand:state.brand, style:state.style, styles:state.styles, sections:state.sections.map(s=>({ title:s.title, screens:s.screens.map(x=>({ title:x.title, description:x.description, conditions:x.conditions, fields:x.fields.map(f=>({ label:f.label, type:f.type, required:f.required, description:f.description, map:f.map, validation:f.validation, validationMsg:f.validationMsg||undefined, width:f.width, remember:f.remember, optsrc:f.optsrc, options:f.options.map(o=>({label:o.label,value:o.value})), conditions:f.conditions, appearance:f.appearance, styleRef:f.styleRef })) })) })), embed:embedOf() }; }
+const EMBED_DEFAULT = { mode:'inline', version:'live', theme:'brand', prefill:true, events:false };
+const embedOf = () => state.embed ||= {...EMBED_DEFAULT};
+/* Builds the form a JSON document describes without touching the current one, so a preview can diff and check it first. */
+function parseForm(j){ if(!Array.isArray(j.sections)) throw new Error('needs a "sections" array'); const next = { embedId:state.embedId, embed:{...EMBED_DEFAULT, ...(j.embed||{})}, name:j.name||state.name, brand:{...state.brand, ...(j.brand||{})}, style:{...state.style, ...(j.style||{})}, styles:j.styles||state.styles||[], sections:j.sections.map(s=>({ id:id('sec'), title:s.title||'Section', open:false, screens:(s.screens||[]).map(x=>({ id:id('s'), title:x.title||'Screen', description:x.description||'', conditions:x.conditions||[], open:false, fields:(x.fields||[]).map(f=>({ id:id('f'), label:f.label||'Question', type:TYPES[f.type]?f.type:'text', required:f.required!==false, description:f.description||'', map:f.map||'', validation:f.validation||'none', validationMsg:f.validationMsg||'', width:f.width||'auto', remember:f.remember!==false, optsrc:f.optsrc, options:(f.options||[]).map(o=>({id:id('o'),label:o.label,value:o.value??slug(o.label)})), conditions:f.conditions||[], appearance:f.appearance, styleRef:f.styleRef })) })) })) }; if(!next.sections.length) throw new Error('at least one section is required'); return next; }
+function adoptForm(next){ state = next; state.sections[0].open = true; sel = { kind:'screen', id: state.sections[0].screens[0]?.id }; }
 
 /* ============================================================
    Render: tree
@@ -1008,7 +1013,7 @@ function fieldWrap(f){
 /* ============================================================
    Render: inspector
    ============================================================ */
-const secOpen = { content:true, options:true, data:true, conditions:false, appearance:false, css:false, screen:true, section:true, logo:true, color:true, scheme:true, type:true, shape:true, styles:false };
+const secOpen = { content:true, options:true, data:true, conditions:false, appearance:false, css:false, screen:true, section:true, logo:true, color:true, scheme:true, type:true, shape:true, styles:false, install:true, embedopts:true, coverage:false, advanced:false };
 const sec = (k, title, body, hint='') => `<div class="sec" data-sec="${k}" data-open="${secOpen[k]!==false}"><button class="sec-h" data-act="sec" aria-expanded="${secOpen[k]!==false}">${title}${hint?`<span class="hint">${hint}</span>`:''}<span class="chev">${icon('i-chev')}</span></button><div class="sec-w"><div><div class="sec-b">${body}</div></div></div></div>`;
 const selectHtml = (name, value, items, attrs='') => `<div class="selw"><select class="ctl" data-bind="${name}" ${attrs}>${items.map(([v,l])=>`<option value="${esc(v)}" ${String(v)===String(value)?'selected':''}>${esc(l)}</option>`).join('')}</select></div>`;
 const input = (name, value, ph='', attrs='') => `<input class="ctl" data-bind="${name}" value="${esc(value)}" placeholder="${esc(ph)}" ${attrs}>`;
@@ -1060,6 +1065,7 @@ function renderField({section, screen, field:f}){
   const sc = schemaOf(f.map);
   const data = `<div class="f"><label>Saved as</label>${f.map ? `<div class="map"><span class="mi">${icon(isCustom(f.map)?'i-sparkle':'i-link')}</span><button class="mt" data-act="pickmap" data-tip="Change" data-tip-pos="bottom"><b>${esc(mapTitle(f.map))}</b><span>${esc(f.map)}${sc?.req?' · needed for every loan':''}${isCustom(f.map)?' · custom field':''}${!sc&&!isCustom(f.map)?' · not in the loan file':''}</span></button><button data-act="clearmap" data-tip="Unlink" data-tip-pos="left">${icon('i-x')}</button></div>` : `<button class="add-row" data-act="pickmap">${icon('i-link')}Choose loan data</button>`}</div>
     <div class="f"><label>Validation</label>${selectHtml('validation', f.validation, [['none','None'],['email','Email'],['phone','U.S. phone'],['zip','ZIP code'],['adult','18 or older'],['positive','Greater than zero']])}</div>
+    ${f.validation!=='none' ? `<div class="f"><label>Message when invalid</label>${input('validationMsg', f.validationMsg||'', DEFAULT_MSG[f.validation])}<span class="sub">Shown under the field when the answer doesn’t pass.</span></div>` : ''}
     ${sw('remember', f.remember!==false, 'Remember answer', 'Restores if the borrower returns')}`;
   const kind = `<div class="ictx"><span class="kind field">${icon(TYPES[f.type].icon)}${TYPES[f.type].label}</span><span class="nm">${esc(f.label)}</span><div class="acts"><button data-act="dup" data-tip="Duplicate  ⌘D" data-tip-pos="left">${icon('i-copy')}</button><button class="del" data-act="del" data-tip="Delete  ⌫" data-tip-pos="left">${icon('i-trash')}</button></div></div>`;
   return kind + sec('content','Content',content) + (HAS_OPTS(f.type) ? sec('options','Options',options, `${list.length}`) : '') + sec('data','Data',data, f.map?'':'Unsaved') + sec('conditions','Visibility',condHtml(f.conditions,f), f.conditions.length?`${f.conditions.length} rule${f.conditions.length>1?'s':''}`:'') + sec('appearance','Appearance',appearanceHtml(f), (f.appearance&&Object.keys(f.appearance).length)||f.styleRef?'Custom':'');
@@ -1105,12 +1111,26 @@ function coverageHtml(){ const by = {}; allFields().forEach(f=>{ if(f.map) (by[f
     <ul class="checklist">${SCHEMA_GROUPS.map(g=>`<li class="lgrp">${g}</li>${SCHEMA.filter(sc=>sc.group===g).map(row).join('')}`).join('')}
     ${customs.length?`<li class="lgrp">Custom fields</li>${customs.map(f=>`<li class="clk" data-go="field" data-id="${f.id}"><span class="ci chg">${icon('i-sparkle',12)}</span><b>${esc(mapTitle(f.map))}<span class="sub2">${esc(f.map)}</span></b><span>“${esc(f.label)}”</span></li>`).join('')}`:''}
     ${unknown.length?`<li class="lgrp">Not in the loan file</li>${unknown.map(f=>`<li class="clk" data-go="field" data-id="${f.id}"><span class="ci warn">${icon('i-warn',12)}</span><b>${esc(f.map)}</b><span>“${esc(f.label)}”</span></li>`).join('')}`:''}</ul>`; }
+const EMBED_HOST = 'https://forms.pylon.app';
+function embedId(){ if(!state.embedId){ state.embedId = 'frm_' + hash(state.name + '|' + Date.now()); persist(); } return state.embedId; }
+function embedSnippet(){ const e = embedOf(); const attrs = [`data-form="${embedId()}"`, e.version==='draft' ? 'data-version="draft"' : '', e.theme==='inherit' ? 'data-theme="inherit"' : '', e.prefill ? 'data-prefill="url"' : '', e.events ? 'data-events="true"' : ''].filter(Boolean).join(' ');
+  if(e.mode==='hosted') return `${EMBED_HOST}/${slug(state.brand.name||'pylon')}/${embedId()}${e.version==='draft'?'?version=draft':''}`;
+  if(e.mode==='modal') return `<button data-pylon-open="${embedId()}">Apply now</button>\n<script src="${EMBED_HOST}/embed.js" ${attrs} data-mode="modal"><\/script>`;
+  return `<div id="pylon-form"></div>\n<script src="${EMBED_HOST}/embed.js" ${attrs} data-mode="inline" data-target="#pylon-form"><\/script>`; }
 function renderCode(){
-  const fmt = ui.codeFmt; const payload = fmt==='form' ? exportForm() : {brand:state.brand, style:state.style, styles:state.styles};
-  return `<div class="ictx"><span class="kind">${icon('i-code')}Code</span><span class="nm">Export &amp; import</span></div>
-    <div class="sec"><div class="sec-b" style="padding-top:12px"><div class="f"><label>Format</label>${selectHtml('codefmt', fmt, [['form','Form JSON'],['theme','Theme JSON'],['schema','Data coverage']])}<span class="sub">${fmt==='form'?'Everything — sections, screens, fields, brand.':fmt==='theme'?'Brand, type and shape only.':'Which loan-file fields this form collects.'}</span></div>
-      ${fmt==='schema' ? coverageHtml() : `<textarea class="ctl code" id="codeBox" spellcheck="false">${esc(JSON.stringify(payload,null,2))}</textarea>
-      <div class="btnrow"><button class="btn sm" data-act="copycode">${icon('i-copy')}Copy</button><button class="btn sm" data-act="dlcode">${icon('i-download')}Download</button><button class="btn sm primary" data-act="applycode">${icon('i-upload')}Apply</button></div>`}</div></div>`;
+  const e = embedOf(); const fmt = ui.codeFmt==='theme' ? 'theme' : 'form'; const payload = fmt==='form' ? exportForm() : {brand:state.brand, style:state.style, styles:state.styles}; const snip = embedSnippet();
+  const install = `<div class="f"><span class="lb">Show it</span><div class="segi full" data-seg="embed.mode"><button aria-pressed="${e.mode==='inline'}" data-v="inline">On a page</button><button aria-pressed="${e.mode==='modal'}" data-v="modal">As a pop-up</button><button aria-pressed="${e.mode==='hosted'}" data-v="hosted">Hosted link</button></div></div>
+    <div class="f"><span class="lb">Version</span><div class="segi full" data-seg="embed.version"><button aria-pressed="${e.version==='live'}" data-v="live">Live</button><button aria-pressed="${e.version==='draft'}" data-v="draft">Draft</button></div><span class="sub">${e.version==='draft'?'Shows unpublished changes. For a staging page only.':'What borrowers see. Updates when you publish.'}</span></div>
+    ${e.mode==='hosted' ? `<div class="f"><label>Link</label><div class="map"><span class="mi">${icon('i-link')}</span><span class="mt"><b>${esc(snip)}</b><span>Share it, print it, or put it behind a button</span></span><button data-act="copysnip" data-tip="Copy link" data-tip-pos="left">${icon('i-copy')}</button></div></div>`
+    : `<div class="f"><label>${e.mode==='modal'?'Button and script':'Snippet'}</label><textarea class="ctl code snip" id="snipBox" readonly rows="3" spellcheck="false">${esc(snip)}</textarea><span class="sub">${e.mode==='modal'?'Put the button anywhere on the page and the script once, before </body>.':'Paste it where the form should appear.'}</span></div><div class="btnrow"><button class="btn sm" data-act="copysnip">${icon('i-copy')}Copy snippet</button></div>`}`;
+  const options = `${sw('embed.prefill', e.prefill, 'Prefill from the page URL', 'Reads lo, source and campaign parameters')}
+    ${sw('embed.events', e.events, 'Send page events', 'pylon:step and pylon:complete, for analytics')}
+    <div class="f"><span class="lb">Look</span><div class="segi full" data-seg="embed.theme"><button aria-pressed="${e.theme==='brand'}" data-v="brand">Form’s brand</button><button aria-pressed="${e.theme==='inherit'}" data-v="inherit">Match the site</button></div><span class="sub">${e.theme==='inherit'?'Uses the page’s font and colours; the Style tab’s shape still applies.':'Uses the Brand and Style tabs.'}</span></div>`;
+  const adv = `<div class="f"><label>Format</label>${selectHtml('codefmt', fmt, [['form','Form JSON'],['theme','Theme JSON']])}<span class="sub">${fmt==='form'?'Everything — sections, screens, fields, brand.':'Brand, type and shape only.'}</span></div>
+    <textarea class="ctl code" id="codeBox" spellcheck="false">${esc(JSON.stringify(payload,null,2))}</textarea>
+    <div class="btnrow"><button class="btn sm" data-act="copycode">${icon('i-copy')}Copy</button><button class="btn sm" data-act="dlcode">${icon('i-download')}Download</button><button class="btn sm primary" data-act="applycode">${icon('i-upload')}Apply…</button></div>`;
+  const by = {}; allFields().forEach(f=>{ if(f.map) (by[f.map] ||= []).push(f); }); const collected = SCHEMA.filter(sc=>by[sc.path]).length;
+  return `<div class="ictx"><span class="kind">${icon('i-code')}Embed</span><span class="nm">Add to your site</span></div>` + sec('install','Install', install) + sec('embedopts','Options', options) + sec('coverage','Loan data', coverageHtml(), `${collected} of ${SCHEMA.length}`) + sec('advanced','Advanced', adv, 'JSON');
 }
 function renderAll(){ renderTree(); renderCanvas(); renderInspector(); persist(); }
 
@@ -1302,8 +1322,9 @@ screenEl.addEventListener('input', e => { if(ui.mode==='edit'){ const ce = e.tar
 screenEl.addEventListener('change', e => { if(ui.mode==='test' && e.target.tagName==='SELECT'){ ui.answers[e.target.dataset.fid]=e.target.value; delete ui.errors[e.target.dataset.fid]; } });
 screenEl.addEventListener('focusout', e => { const ce = e.target.closest?.('[data-edit]'); if(ce && ui.mode==='edit'){ commitEdit(ce); return; } const t = e.target.closest?.('.scr-title'); if(t && ui.mode==='edit'){ const s = find({kind:'screen',id:t.dataset.sid})?.screen; const v = t.textContent.trim(); if(s && v && v!==s.title){ commit(()=>{ s.title=v; }); } else if(s) t.textContent = s.title; } });
 screenEl.addEventListener('keydown', e => { const ce = e.target.closest?.('[data-edit]'); if(ce){ if(e.key==='Enter'){ e.preventDefault(); ce.blur(); } if(e.key==='Escape'){ e.stopPropagation(); const t = editTarget(ce); if(t) ce.textContent = t.stored; mirrorEdit(ce); ce.blur(); } return; } if(e.target.classList.contains('scr-title') && e.key==='Enter'){ e.preventDefault(); e.target.blur(); } if(e.target.classList.contains('scr-title') && e.key==='Escape'){ e.target.textContent = find({kind:'screen',id:e.target.dataset.sid}).screen.title; e.target.blur(); } if(e.target.classList.contains('fw') && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); select({kind:'field',id:e.target.dataset.fid}); } if(e.target.classList.contains('choice') && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); e.target.click(); } });
-function validate(f, v){ const has = Array.isArray(v) ? v.length>0 : (v!=null && String(v).trim()!==''); if(f.required && !has) return 'This one’s required.'; if(!has) return null; const s = String(v).trim();
-  if(f.validation==='email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) return 'Enter a valid email.'; if(f.validation==='phone' && s.replace(/\D/g,'').length<10) return 'Enter a 10-digit phone number.'; if(f.validation==='zip' && !/^\d{5}(-\d{4})?$/.test(s)) return 'Enter a 5-digit ZIP.'; if(f.validation==='positive' && !(parseFloat(s.replace(/[,$]/g,''))>0)) return 'Enter an amount above zero.'; if(f.validation==='adult'){ const d = new Date(s); if(isNaN(d)) return 'Enter a date like 04/12/1990.'; if((Date.now()-d)/31557600000 < 18) return 'Must be 18 or older.'; } return null; }
+const DEFAULT_MSG = { required:'This one’s required.', email:'Enter a valid email.', phone:'Enter a 10-digit phone number.', zip:'Enter a 5-digit ZIP.', positive:'Enter an amount above zero.', adult:'Must be 18 or older.' };
+function validate(f, v){ const has = Array.isArray(v) ? v.length>0 : (v!=null && String(v).trim()!==''); if(f.required && !has) return DEFAULT_MSG.required; if(!has) return null; const s = String(v).trim(); const msg = f.validationMsg || DEFAULT_MSG[f.validation];
+  if(f.validation==='email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) return msg; if(f.validation==='phone' && s.replace(/\D/g,'').length<10) return msg; if(f.validation==='zip' && !/^\d{5}(-\d{4})?$/.test(s)) return msg; if(f.validation==='positive' && !(parseFloat(s.replace(/[,$]/g,''))>0)) return msg; if(f.validation==='adult'){ const d = new Date(s); if(isNaN(d)) return 'Enter a date like 04/12/1990.'; if((Date.now()-d)/31557600000 < 18) return msg; } return null; }
 function nextScreen(){ const screens = testScreens(); const scr = screens[ui.testIdx]; if(!scr) return; ui.errors={}; for(const f of scr.fields.filter(f=>passes(f.conditions))){ const err = validate(f, ui.answers[f.id]); if(err) ui.errors[f.id]=err; }
   if(Object.keys(ui.errors).length){ renderCanvas(); const first = $('.fw.err', screenEl); first?.classList.add('shake'); first?.scrollIntoView({block:'center',behavior:'smooth'}); first?.querySelector('input,select,[tabindex="0"]')?.focus({preventScroll:true}); return; }
   if(ui.testIdx >= screens.length-1){ ui.done = true; renderCanvas({anim:true}); toast('Test run complete','ok'); return; }
@@ -1369,9 +1390,10 @@ insp.addEventListener('click', e => {
   if(a==='resetstyle'){ commit(()=>{ state.style = seed().style; }); toast('Style reset'); return; }
   if(a==='newstyle'){ const src = find(sel)?.field; if(!src?.appearance || !Object.keys(src.appearance).length) return toast('Select a field with custom appearance first','warn'); prompt2('Name this style', 'e.g. Emphasis', name => { commit(()=>{ const st = {id:id('st'), name, appearance:clone(src.appearance)}; state.styles.push(st); src.styleRef = st.id; delete src.appearance; }); toast(`Saved “${name}”`,'ok'); }); return; }
   if(a==='rmstyle'){ const sid = act.dataset.id; commit(()=>{ state.styles = state.styles.filter(s=>s.id!==sid); allFields().forEach(f=>{ if(f.styleRef===sid) delete f.styleRef; }); }); return; }
+  if(a==='copysnip'){ navigator.clipboard?.writeText(embedSnippet()).then(()=>toast('Copied','ok'), ()=>toast('Copy blocked by browser','warn')); return; }
   if(a==='copycode'){ navigator.clipboard?.writeText($('#codeBox').value).then(()=>toast('Copied','ok'), ()=>toast('Copy blocked by browser','warn')); return; }
   if(a==='dlcode'){ download(`pylon-${ui.codeFmt}.json`, $('#codeBox').value); return; }
-  if(a==='applycode'){ try{ const j = JSON.parse($('#codeBox').value); if(ui.codeFmt==='form'){ commit(()=>importForm(j)); } else { commit(()=>{ if(j.brand) state.brand={...state.brand,...j.brand}; if(j.style) state.style={...state.style,...j.style}; if(j.styles) state.styles=j.styles; }); } applyBrand(); toast('Applied','ok'); }catch(err){ toast('Invalid JSON — '+err.message,'warn'); } return; }
+  if(a==='applycode'){ try{ const j = JSON.parse($('#codeBox').value); if(ui.codeFmt==='theme'){ commit(()=>{ if(j.brand) state.brand={...state.brand,...j.brand}; if(j.style) state.style={...state.style,...j.style}; if(j.styles) state.styles=j.styles; }); applyBrand(); toast('Applied','ok'); } else previewImport(parseForm(j)); }catch(err){ toast('Invalid JSON — '+err.message,'warn'); } return; }
 });
 insp.addEventListener('change', e => { const t = e.target;
   if(t.dataset.logo){ const file = t.files?.[0]; if(!file) return; if(file.size > 262144) return toast('Logo must be under 256 KB','warn'); const rd = new FileReader(); rd.onload = ()=>{ commit(()=>{ state.brand[t.dataset.logo] = rd.result; }); toast('Logo updated','ok'); }; rd.readAsDataURL(file); return; }
@@ -1401,6 +1423,7 @@ function applyBind(key, val, el){
   if(key.startsWith('brand.')){ state.brand[key.slice(6)] = val; if(key==='brand.custom') state.brand.color='custom'; applyBrand(); return; }
   if(key.startsWith('style.')){ state.style[key.slice(6)] = val; return; }
   if(key==='codefmt'){ ui.codeFmt = val; return; }
+  if(key.startsWith('embed.')){ embedOf()[key.slice(6)] = val; return; }
   if(key.startsWith('c.')){ const i = +el.dataset.ci; const c = t.conditions[i]; c[key.slice(2)] = val; if(key==='c.field'||key==='c.op') c.value=''; return; }
   if(key.startsWith('a.')){ t.appearance ||= {}; if(val===''||val==='inherit') delete t.appearance[key.slice(2)]; else t.appearance[key.slice(2)] = val; return; }
   if(key==='styleRef'){ if(val) t.styleRef = val; else delete t.styleRef; return; }
@@ -1472,7 +1495,7 @@ function toast(text, kind='', action, o={}){ const t = document.createElement('d
 function openPalette(){
   const cmds = [
     {g:'Create', l:'Add field', i:'i-plus', fn:()=>openTypePicker()}, {g:'Create', l:'Add screen', i:'i-screen', fn:()=>addScreen()}, {g:'Create', l:'Add section', i:'i-section', fn:addSection}, {g:'Create', l:'From question library', i:'i-library', fn:openLibrary}, {g:'Form', l:'Saved forms', i:'i-folder', fn:openForms}, {g:'Form', l:'New form', i:'i-file-plus', fn:newForm},
-    {g:'Form', l:'Save draft', i:'i-check', k:'⌘S', fn:saveDraft}, {g:'Form', l:'Review & publish', i:'i-send', fn:openPublish}, {g:'Form', l:'Data coverage', i:'i-link', fn:()=>{ ui.tab='code'; ui.codeFmt='schema'; renderInspector(); }}, {g:'View', l:'Test as a persona', i:'i-person', fn:()=>{ setMode('test'); $('#dockPersona').click(); }}, {g:'Form', l:'Edit form JSON', i:'i-code', fn:openJson}, {g:'Form', l:'Rename form', i:'i-text', fn:()=>$('#nameBtn').click()}, {g:'Form', l:'Reset to sample form', i:'i-reset', fn:()=>confirm2('Reset form?','Replaces everything with the sample loan application. Undo is available.','Reset',()=>{ commit(()=>{ state=seed(); sel={kind:'field',id:state.sections[0].screens[0].fields[0].id}; }); applyBrand(); toast('Sample form restored'); }, true)},
+    {g:'Form', l:'Save draft', i:'i-check', k:'⌘S', fn:saveDraft}, {g:'Form', l:'Review & publish', i:'i-send', fn:openPublish}, {g:'Form', l:'Loan data coverage', i:'i-link', fn:()=>{ ui.tab='code'; secOpen.coverage=true; renderInspector(); }}, {g:'Form', l:'Embed on your site', i:'i-code', fn:()=>{ ui.tab='code'; renderInspector(); }}, {g:'Form', l:'Version history', i:'i-refresh', fn:openHistory}, {g:'View', l:'Test as a persona', i:'i-person', fn:()=>{ setMode('test'); $('#dockPersona').click(); }}, {g:'Form', l:'Edit form JSON', i:'i-code', fn:openJson}, {g:'Form', l:'Rename form', i:'i-text', fn:()=>$('#nameBtn').click()}, {g:'Form', l:'Reset to sample form', i:'i-reset', fn:()=>confirm2('Reset form?','Replaces everything with the sample loan application. Undo is available.','Reset',()=>{ commit(()=>{ state=seed(); sel={kind:'field',id:state.sections[0].screens[0].fields[0].id}; }); applyBrand(); toast('Sample form restored'); }, true)},
     {g:'View', l:ui.mode==='edit'?'Test the form':'Back to editing', i:'i-eye', k:'P', fn:()=>setMode(ui.mode==='edit'?'test':'edit')}, {g:'View', l:'Phone preview', i:'i-mobile', k:'M', fn:()=>setDevice('mobile')}, {g:'View', l:'Desktop preview', i:'i-desktop', fn:()=>setDevice('desktop')}, {g:'View', l:'Toggle editor theme', i:'i-moon', fn:()=>$('#themeBtn').click()}, {g:'View', l:'Toggle structure panel', i:'i-sidebar', k:'⌘\\', fn:()=>togglePanel('left')}, {g:'View', l:'Toggle inspector', i:'i-sidebar-r', k:'⌘/', fn:()=>togglePanel('right')}, {g:'View', l:'Keyboard shortcuts', i:'i-keyboard', k:'?', fn:openShortcuts},
     {g:'Settings', l:'Brand', i:'i-brand', fn:()=>{ ui.tab='brand'; renderInspector(); }}, {g:'Settings', l:'Style', i:'i-style', fn:()=>{ ui.tab='style'; renderInspector(); }},
     ...allScreens().map(s=>({g:'Screens', l:s.title, i:'i-screen', fn:()=>select({kind:'screen',id:s.id})})),
@@ -1496,15 +1519,14 @@ function loadLive(){ try{ return JSON.parse(localStorage.getItem(LIVE)); }catch(
 function liveRev(){ const l = loadLive(); return l ? l.rev : null; }
 function hash(str){ let h = 5381; for(let i=0;i<str.length;i++) h = ((h<<5)+h+str.charCodeAt(i))|0; return (h>>>0).toString(16).padStart(8,'0').slice(0,7); }
 /* Field and screen ids are stable across edits, so the diff pairs by id; an import regenerates ids and shows as remove + add. */
-function changesSinceLive(){
-  const live = loadLive(); if(!live) return null;
-  const items = []; const go = (kind,id,focus) => ({kind,id,focus});
-  const ls = live.sections.flatMap(x=>x.screens), lf = ls.flatMap(x=>x.fields); const L = Object.fromEntries(lf.map(f=>[f.id,f])), LS_ = Object.fromEntries(ls.map(x=>[x.id,x]));
-  const cur = allFields(), curS = allScreens(); const C = Object.fromEntries(cur.map(f=>[f.id,f])), CS = Object.fromEntries(curS.map(x=>[x.id,x]));
-  const J = v => JSON.stringify(v ?? null);
-  for(const x of curS){ const o = LS_[x.id]; if(!o) items.push({t:'Screen added', n:x.title, i:'i-plus', go:go('screen',x.id)}); else if(o.title!==x.title) items.push({t:'Screen renamed', n:`${o.title} → ${x.title}`, i:'i-text', go:go('screen',x.id)}); else if(J(o.conditions)!==J(x.conditions)) items.push({t:'Screen rules changed', n:x.title, i:'i-branch', go:go('screen',x.id)}); }
-  for(const x of ls) if(!CS[x.id]) items.push({t:'Screen removed', n:x.title, i:'i-x'});
-  for(const f of cur){ const o = L[f.id]; const g = go('field',f.id);
+/* Pairs fields and screens by key — id for live-vs-draft, loan-file path for an import, where ids are new. */
+function diffForms(prev, next, k={}){
+  const fk = k.field || (f=>f.id), sk = k.screen || (x=>x.id); const items = []; const go = (kind,id,focus) => ({kind,id,focus}); const J = v => JSON.stringify(v ?? null);
+  const ps = prev.sections.flatMap(x=>x.screens), pf = ps.flatMap(x=>x.fields), ns = next.sections.flatMap(x=>x.screens), nf = ns.flatMap(x=>x.fields);
+  const P = Object.fromEntries(pf.map(f=>[fk(f),f])), PS = Object.fromEntries(ps.map(x=>[sk(x),x])), N = Object.fromEntries(nf.map(f=>[fk(f),f])), NS = Object.fromEntries(ns.map(x=>[sk(x),x]));
+  for(const x of ns){ const o = PS[sk(x)]; if(!o) items.push({t:'Screen added', n:x.title, i:'i-plus', go:go('screen',x.id)}); else if(o.title!==x.title) items.push({t:'Screen renamed', n:`${o.title} → ${x.title}`, i:'i-text', go:go('screen',x.id)}); else if(J(o.conditions)!==J(x.conditions)) items.push({t:'Screen rules changed', n:x.title, i:'i-branch', go:go('screen',x.id)}); }
+  for(const x of ps) if(!NS[sk(x)]) items.push({t:'Screen removed', n:x.title, i:'i-x'});
+  for(const f of nf){ const o = P[fk(f)]; const g = go('field',f.id);
     if(!o){ items.push({t:'Added', n:f.label, i:'i-plus', go:g}); continue; }
     if(o.label!==f.label) items.push({t:'Renamed', n:`${o.label} → ${f.label}`, i:'i-text', go:g});
     if(o.type!==f.type) items.push({t:'Type changed', n:`${f.label} · ${TYPES[o.type]?.label} → ${TYPES[f.type]?.label}`, i:'i-form', go:g});
@@ -1513,37 +1535,58 @@ function changesSinceLive(){
     if(J(o.conditions)!==J(f.conditions)) items.push({t:'Rules changed', n:f.label, i:'i-branch', go:g});
     if(J((o.options||[]).map(x=>[x.label,x.value]))!==J((f.options||[]).map(x=>[x.label,x.value])) || (o.optsrc||'')!==(f.optsrc||'')) items.push({t:'Options changed', n:f.label, i:'i-choice', go:g});
     if((o.description||'')!==(f.description||'')) items.push({t:'Help text changed', n:f.label, i:'i-para', go:g});
+    if((o.validation||'none')!==(f.validation||'none') || (o.validationMsg||'')!==(f.validationMsg||'')) items.push({t:'Validation changed', n:f.label, i:'i-check', go:g});
   }
-  for(const f of lf) if(!C[f.id]) items.push({t:'Removed', n:f.label, i:'i-x'});
-  if(J([live.brand, live.style, live.styles])!==J([state.brand, state.style, state.styles])) items.push({t:'Brand or style changed', n:'', i:'i-brand', tab:'brand'});
-  if(live.name!==state.name) items.push({t:'Form renamed', n:`${live.name} → ${state.name}`, i:'i-text'});
+  for(const f of pf) if(!N[fk(f)]) items.push({t:'Removed', n:f.label, i:'i-x'});
+  if(J([prev.brand, prev.style, prev.styles])!==J([next.brand, next.style, next.styles])) items.push({t:'Brand or style changed', n:'', i:'i-brand', tab:'brand'});
+  if(prev.name!==next.name) items.push({t:'Form renamed', n:`${prev.name} → ${next.name}`, i:'i-text'});
   return items;
 }
-function lum(hex){ const h = hex.replace('#',''); const [r,g,b] = [0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)); return 0.2126*r+0.7152*g+0.0722*b; }
-/* Each check names its first offender so the row can jump straight to it. Rules may only depend on answers given earlier in the form. */
+function changesSinceLive(){ const live = loadLive(); return live ? diffForms(live, state) : null; }
+const crow = (c,i,cls='') => `<li class="${cls}" data-chg="${i}"><span class="ci chg">${icon(c.i,12)}</span><b>${esc(c.t)}</b><span>${esc(c.n)}</span></li>`;
+/* Shows what an import would change and what it would leave to fix before the form could be published, then applies it as one undo step. */
+function previewImport(next){
+  const changes = diffForms(state, next, {field:f=>f.map||('label:'+f.label), screen:x=>x.title}); const cur = state; state = next; const iss = computeIssues(); state = cur; const SHOW = 10;
+  modal(`<div class="mh"><h2>Apply this form?</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
+    <div class="mb">${changes.length ? `<div class="f"><label>Changes · ${changes.length}</label><ul class="checklist">${changes.slice(0,SHOW).map((c,i)=>crow(c,i)).join('')}${changes.length>SHOW?`<li><span class="ci chg">${icon('i-more',12)}</span><b>${changes.length-SHOW} more</b></li>`:''}</ul></div>` : `<div class="empty"><b>No changes</b>This matches the current form.</div>`}
+      ${iss.blockers ? `<div class="note">${icon('i-warn')}<span>${iss.blockers} thing${iss.blockers>1?'s':''} to fix before it could be published. You’ll see them after applying.</span></div>` : ''}
+      <div class="note">${icon('i-info')}<span>Replaces the whole form. Undo is available afterwards.</span></div></div>
+    <div class="mf"><button class="btn" data-close>Cancel</button><button class="btn primary" id="doImport" ${changes.length?'':'disabled'}>Apply</button></div>`,
+    m => { $('#doImport', m).onclick = ()=>{ closeModal(); commit(()=>adoptForm(next)); applyBrand(); $('#formName').textContent = state.name; toast('Form updated','ok'); }; });
+}
+const VERS = LS+'.versions';
+function loadVersions(){ try{ return JSON.parse(localStorage.getItem(VERS)) || []; }catch(e){ return []; } }
+function ago(t){ const m = Math.round((Date.now()-t)/60000); if(m<1) return 'just now'; if(m<60) return `${m} min ago`; const h = Math.round(m/60); if(h<24) return `${h} h ago`; return `${Math.round(h/24)} d ago`; }
+function restoreVersion(v){ commit(()=>{ state = {...state, name:v.name, brand:clone(v.brand), style:clone(v.style), styles:clone(v.styles), sections:clone(v.sections)}; state.sections[0].open = true; sel = {kind:'screen', id:state.sections[0].screens[0]?.id}; }); applyBrand(); $('#formName').textContent = state.name; toast(`Restored ${v.rev}`, 'ok'); }
+function openHistory(){ const vs = loadVersions(); const live = liveRev();
+  modal(`<div class="mh"><h2>Version history</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
+    <div class="mb">${vs.length ? `<ul class="checklist">${vs.map((v,i)=>`<li><span class="ci ${v.rev===live?'ok':'chg'}">${icon(v.rev===live?'i-check':'i-send',12)}</span><b>${esc(v.note||'No release note')}<span class="sub2">${v.rev} · ${ago(v.at)}${v.rev===live?' · live now':''}</span></b><button class="btn sm" data-restore="${i}">Restore</button></li>`).join('')}</ul>` : `<div class="empty"><b>No versions yet</b>Every publish is kept here.</div>`}</div>`,
+    m => { m.addEventListener('click', e => { const b = e.target.closest('[data-restore]'); if(!b) return; const v = vs[+b.dataset.restore]; closeModal(); setTimeout(()=>confirm2(`Restore ${v.rev}?`, 'Your draft becomes this version. Undo is available afterwards.', 'Restore', ()=>restoreVersion(v)), 160); }); });
+}
 function openPublish(){
   ui.iss = computeIssues(); syncIssues(); const {issues, blockers} = ui.iss; const blocks = issues.filter(i=>i.sev==='block'), warns = issues.filter(i=>i.sev==='warn');
   const changes = changesSinceLive(); const first = changes===null; const none = changes && !changes.length; const SHOW = 8;
   const irow = (c,i) => `<li class="${c.go||c.fix?'clk':''}" data-iss="${i}"><span class="ci ${c.sev}">${icon(c.sev==='block'?'i-x':'i-warn',12)}</span><b>${esc(c.l)}${c.s?`<span class="sub2">${esc(c.s)}</span>`:''}</b>${c.fix?`<button class="btn sm" data-fix="${i}">${fixLabel(c.fix)}</button>`:''}</li>`;
-  const crow = (c,i) => `<li class="${c.go||c.tab?'clk':''}" data-chg="${i}"><span class="ci chg">${icon(c.i,12)}</span><b>${esc(c.t)}</b><span>${esc(c.n)}</span></li>`;
-  modal(`<div class="mh"><h2>Review &amp; publish</h2>${liveRev()?`<span class="pill mono">live ${liveRev()}</span>`:''}<button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
+  modal(`<div class="mh"><h2>Review &amp; publish</h2>${liveRev()?`<button class="pill mono" data-act="history" data-tip="Version history" data-tip-pos="bottom">live ${liveRev()}</button>`:''}<button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
     <div class="mb">
       ${blocks.length ? `<div class="f"><label>Fix before publishing · ${blocks.length}</label><ul class="checklist">${blocks.map((c,i)=>irow(c, issues.indexOf(c))).join('')}</ul></div>` : ''}
       ${warns.length ? `<div class="f"><label>Worth a look · ${warns.length}</label><ul class="checklist">${warns.map(c=>irow(c, issues.indexOf(c))).join('')}</ul></div>` : ''}
       ${!issues.length ? `<div class="note ok">${icon('i-check')}<span>Every check passes.</span></div>` : ''}
       <div class="f"><label>${first?'First publish':none?'Changes since live':`Changes since live · ${changes.length}`}</label>
-        ${first ? `<div class="empty"><b>Nothing is live yet</b>Publishing makes the whole form available to new borrowers.</div>` : none ? `<div class="empty"><b>Up to date</b>The draft matches what borrowers see.</div>` : `<ul class="checklist">${changes.slice(0,SHOW).map(crow).join('')}${changes.length>SHOW?`<li><span class="ci chg">${icon('i-more',12)}</span><b>${changes.length-SHOW} more</b></li>`:''}</ul>`}</div>
+        ${first ? `<div class="empty"><b>Nothing is live yet</b>Publishing makes the whole form available to new borrowers.</div>` : none ? `<div class="empty"><b>Up to date</b>The draft matches what borrowers see.</div>` : `<ul class="checklist">${changes.slice(0,SHOW).map((c,i)=>crow(c,i,c.go||c.tab?'clk':'')).join('')}${changes.length>SHOW?`<li><span class="ci chg">${icon('i-more',12)}</span><b>${changes.length-SHOW} more</b></li>`:''}</ul>`}</div>
       <div class="f"><label>Release note</label><input class="ctl" id="relNote" placeholder="What changed? Optional"></div></div>
-    <div class="mf"><button class="btn" data-close>Not yet</button><button class="btn primary" id="doPublish" ${none||blockers?'disabled':''}>${blockers?`Fix ${blockers} first`:none?'Up to date':'Publish'}</button></div>`,
+    <div class="mf">${changes&&changes.length?`<button class="btn ghost" id="discardDraft">Discard draft</button>`:''}<span style="flex:1"></span><button class="btn" data-close>Not yet</button><button class="btn primary" id="doPublish" ${none||blockers?'disabled':''}>${blockers?`Fix ${blockers} first`:none?'Up to date':'Publish'}</button></div>`,
     m => { m.addEventListener('click', e=>{ const fb = e.target.closest('[data-fix]'); if(fb){ e.stopPropagation(); closeModal(); applyFix(issues[+fb.dataset.fix].fix); return; }
         const li = e.target.closest('li.clk'); if(!li) return; const c = li.dataset.iss!=null ? issues[+li.dataset.iss] : changes[+li.dataset.chg]; closeModal(); if(c.go) select({kind:c.go.kind, id:c.go.id}, {focus:c.go.focus}); else if(c.tab){ ui.tab = c.tab; renderInspector(); } else if(c.fix) applyFix(c.fix); });
-      $('#doPublish', m).onclick = ()=>{ const snap = clone({name:state.name, brand:state.brand, style:state.style, styles:state.styles, sections:state.sections}); snap.rev = hash(JSON.stringify(snap)); snap.at = Date.now(); snap.note = $('#relNote', m).value.trim(); try{ localStorage.setItem(LIVE, JSON.stringify(snap)); }catch(e){} closeModal(); persist(); markSaved(); toast(`Published ${snap.rev} — live for new borrowers`,'ok'); }; });
+      $('[data-act=history]', m)?.addEventListener('click', ()=>{ closeModal(); setTimeout(openHistory, 160); });
+      $('#discardDraft', m)?.addEventListener('click', ()=>{ closeModal(); setTimeout(()=>confirm2('Discard draft changes?', 'Your draft goes back to the live version. Undo is available afterwards.', 'Discard', ()=>restoreVersion(loadLive()), true), 160); });
+      $('#doPublish', m).onclick = ()=>{ const snap = clone({name:state.name, brand:state.brand, style:state.style, styles:state.styles, sections:state.sections}); snap.rev = hash(JSON.stringify(snap)); snap.at = Date.now(); snap.note = $('#relNote', m).value.trim(); try{ localStorage.setItem(LIVE, JSON.stringify(snap)); localStorage.setItem(VERS, JSON.stringify([snap, ...loadVersions().filter(v=>v.rev!==snap.rev)].slice(0,20))); }catch(e){} closeModal(); persist(); markSaved(); toast(`Published ${snap.rev} — live for new borrowers`,'ok'); }; });
 }
 function openJson(){
   modal(`<div class="mh"><h2>Form JSON</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
     <div class="mb"><textarea class="ctl code" id="jsonBox" style="min-height:48vh" spellcheck="false">${esc(JSON.stringify(exportForm(),null,2))}</textarea><div class="note">${icon('i-info')}<span>Applying replaces the whole form. Undo works afterwards.</span></div></div>
     <div class="mf"><button class="btn" data-act="fmt">Format</button><span style="flex:1"></span><button class="btn" data-close>Cancel</button><button class="btn primary" id="applyJson">Apply</button></div>`,
-    m => { $('[data-act=fmt]',m).onclick=()=>{ try{ $('#jsonBox').value = JSON.stringify(JSON.parse($('#jsonBox').value),null,2); }catch(err){ toast('Invalid JSON — '+err.message,'warn'); } }; $('#applyJson', m).onclick = ()=>{ try{ const j = JSON.parse($('#jsonBox').value); commit(()=>importForm(j)); applyBrand(); $('#formName').textContent=state.name; closeModal(); toast('Form updated','ok'); }catch(err){ toast('Invalid JSON — '+err.message,'warn'); } }; });
+    m => { $('[data-act=fmt]',m).onclick=()=>{ try{ $('#jsonBox').value = JSON.stringify(JSON.parse($('#jsonBox').value),null,2); }catch(err){ toast('Invalid JSON — '+err.message,'warn'); } }; $('#applyJson', m).onclick = ()=>{ try{ const next = parseForm(JSON.parse($('#jsonBox').value)); closeModal(); setTimeout(()=>previewImport(next), 160); }catch(err){ toast('Invalid JSON — '+err.message,'warn'); } }; });
 }
 const LIBRARY = [['Co-borrower email','email','coborrower.email'],['Preferred language','select','borrower.language',['English','Spanish','Mandarin','Vietnamese']],['How did you hear about us?','choice','marketing.source',['Referral','Search','Social','Other']],['Down payment amount','currency','loan.down_payment'],['Estimated credit score','select','credit.self_reported',['760+','720–759','680–719','640–679','Below 640']],['Rate lock preference','choice','loan.rate_lock',['Lock now','Float','Not sure']],['Mailing address','address','borrower.mailing.street'],['Best time to call','select','borrower.contact_window',['Morning','Afternoon','Evening']]];
 function openLibrary(){ const scr = currentScreen(); if(!scr) return toast('Pick a screen first','warn');
