@@ -52,14 +52,13 @@
 
 /* ============================================================ Base */
 *{box-sizing:border-box}
-html,body{height:100%}
+html,body{height:100%;overflow:hidden}
 body{margin:0;font-family:var(--font);font-size:13px;line-height:1.45;color:var(--t1);background:var(--bg);-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;background:none;border:0;padding:0;-webkit-tap-highlight-color:transparent}
 svg{display:block;flex:none}
 ::selection{background:var(--sel-soft)}
 :focus-visible{outline:2px solid var(--sel);outline-offset:2px;border-radius:var(--r1)}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .kbd{font-family:var(--mono);font-size:11px;padding:1px 5px;border-radius:var(--r0);border:1px solid var(--line-2);background:var(--panel-2);color:var(--t3);line-height:1.5;white-space:nowrap}
 .scroll{overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
 .scroll::-webkit-scrollbar{width:8px;height:8px}.scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
@@ -83,7 +82,6 @@ svg{display:block;flex:none}
 .btn .kbd{margin-left:2px}
 .btn .cnt{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--err);color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center;margin:0 -3px 0 1px}
 
-/* Segmented control */
 /* Segmented control, 32px (26px buttons + 2px padding + 1px border). .seg.round is the 28px capsule variant. */
 .seg{display:inline-flex;position:relative;background:var(--panel-3);border-radius:var(--rs);padding:2px;gap:2px;border:1px solid var(--line)}
 .seg.eq{display:inline-grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);min-width:max-content}
@@ -101,6 +99,9 @@ svg{display:block;flex:none}
 [data-tip]:focus-visible::after{transition-delay:0ms}
 [data-tip-pos="bottom"]::after{bottom:auto;top:calc(100% + 7px);transform:translate(-50%,-2px)}
 [data-tip-pos="bottom"]:hover::after{transform:translate(-50%,0)}
+[data-tip-pos="bottom-start"]::after{bottom:auto;top:calc(100% + 7px);left:0;transform:translate(0,-2px)}
+[data-tip-pos="bottom-end"]::after{bottom:auto;top:calc(100% + 7px);left:auto;right:0;transform:translate(0,-2px)}
+[data-tip-pos="bottom-start"]:hover::after,[data-tip-pos="bottom-end"]:hover::after,[data-tip-pos="bottom-start"]:focus-visible::after,[data-tip-pos="bottom-end"]:focus-visible::after{transform:none}
 [data-tip-pos="left"]::after{bottom:auto;left:auto;right:calc(100% + 7px);top:50%;transform:translate(2px,-50%)}
 [data-tip-pos="left"]:hover::after{transform:translate(0,-50%)}
 
@@ -203,7 +204,7 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 .zoom button{width:22px;height:22px;border-radius:999px;display:grid;place-items:center;color:var(--t2);transition:background var(--fast)}
 .zoom button:hover{background:var(--ink-soft);color:var(--t1)}
 .zoom span{font-size:12px;font-variant-numeric:tabular-nums;color:var(--t2);min-width:40px;text-align:center;cursor:pointer}
-.stage-scroll{flex:1;display:block;padding:8px clamp(16px,4vw,48px) 120px;scrollbar-gutter:stable}
+.stage-scroll{flex:1;display:block;padding:8px clamp(16px,4vw,48px) 120px;scrollbar-gutter:stable both-edges}
 .device{margin:0 auto;transition:width var(--slow) var(--ease),height var(--med) var(--ease)}
 .frame{background:var(--panel);border:1px solid var(--line);border-radius:var(--r4);box-shadow:var(--sh-2);overflow:hidden;transform-origin:top left;transition:transform var(--med) var(--ease),width var(--slow) var(--ease);font-family:var(--frame-font);color-scheme:light}
 .frame[data-scheme="light"]{--fp:#ffffff;--fp2:#f6f6f5;--fl:#e6e5e2;--fl2:#d4d2cd;--ft1:#18181a;--ft2:#5c5b57;--ft3:#73716b}
@@ -268,7 +269,7 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 .choice.on .ck{background:var(--brand);border-color:var(--brand)}
 .choice .ck svg{opacity:0;transform:scale(.6);transition:opacity var(--fast),transform var(--fast)}
 .choice.on .ck svg{opacity:1;transform:none}
-.choice.multi .ck{border-radius:6px}
+.choice.multi .ck{border-radius:var(--r1)}
 .inp{display:flex;align-items:center;gap:8px;height:48px;padding:0 14px;border:1px solid var(--fl2);border-radius:var(--field-radius,12px);background:var(--fp);color:var(--ft3);font-size:14px;transition:border-color var(--fast),box-shadow var(--fast)}
 .inp .pre{font-weight:500;color:var(--ft2)}
 .inp.ta{height:auto;min-height:92px;align-items:flex-start;padding-top:12px}
@@ -295,7 +296,7 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 .done p{margin:0;color:var(--ft2)}
 
 /* Dock */
-.dock{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:2px;padding:4px;background:color-mix(in srgb,var(--panel) 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-3);z-index:10;max-width:calc(100% - 32px)}
+.dock{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:2px;padding:4px;background:color-mix(in srgb,var(--panel) 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:var(--r3);box-shadow:var(--sh-3);z-index:10;max-width:calc(100% - 32px)}
 .dock button{position:relative;width:32px;height:32px;border-radius:var(--r2);display:grid;place-items:center;color:var(--t2);transition:background var(--fast),color var(--fast);flex:none}
 .dock button:hover{background:var(--ink-soft);color:var(--t1)}
 .dock button:disabled{opacity:.3;cursor:not-allowed}
@@ -353,7 +354,6 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
 .ctl-ico>svg{position:absolute;left:9px;top:9px;color:var(--t3);pointer-events:none}
 .ctl-ico .unit{position:absolute;right:10px;top:8px;font-size:11px;color:var(--t3);pointer-events:none}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .sw{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:2px 0}
 .sw input{position:absolute;opacity:0;width:0;height:0}
 .sw .t{width:30px;height:18px;border-radius:999px;background:var(--line-2);position:relative;transition:background var(--med);flex:none}
@@ -382,19 +382,16 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
 .opt .rm:hover{background:var(--err-soft);color:var(--err)}
 .add-row{display:flex;align-items:center;justify-content:center;gap:6px;height:32px;border:1px dashed var(--line-2);border-radius:var(--rs);color:var(--t2);font-weight:500;transition:border-color var(--fast),color var(--fast),background var(--fast)}
 .add-row:hover{border-color:var(--line-3);color:var(--t1);background:var(--panel-2)}
-.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font-weight:500;font-size:12px;color:var(--t2);transition:border-color var(--fast),background var(--fast),color var(--fast)}
-.chip:hover{border-color:var(--line-3);color:var(--t1)}
-.chip[aria-pressed="true"]{background:var(--ink);color:var(--ink-fg);border-color:var(--ink)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip .sw2{width:12px;height:12px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
 .map{display:flex;align-items:center;gap:8px;padding:7px 8px 7px 10px;border:1px solid var(--line);border-radius:var(--r2);background:var(--panel-2);min-width:0}
 .map .mi{width:24px;height:24px;border-radius:var(--r1);background:var(--sel-soft);color:var(--sel);display:grid;place-items:center;flex:none}
 .map .mt{flex:1;min-width:0}
-.map .mt b{display:block;font-family:var(--mono);font-weight:500;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.map .mt span{font-size:11px;color:var(--t3)}
+.map .mt b{display:block;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.map .mt span{display:block;font-family:var(--mono);font-size:11px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .map button{color:var(--t3);width:24px;height:24px;border-radius:var(--r1);display:grid;place-items:center;flex:none;transition:background var(--fast),color var(--fast)}
 .map button:hover{background:var(--ink-soft);color:var(--t1)}
-.map button.mt{width:auto;height:auto;display:block;flex:1;text-align:left;color:inherit;padding:2px 4px;margin:-2px -4px}
+/* A button centres its content on its own; laying it out as a column pins the label and path to the left. */
+.map button.mt{width:auto;height:auto;display:flex;flex-direction:column;align-items:flex-start;flex:1;min-width:0;text-align:left;color:inherit;padding:2px 4px;margin:-2px -4px}
+.map button.mt>*{max-width:100%}
 .map button.mt:hover{background:var(--ink-soft)}
 .checklist b .sub2,.checklist li .sub2{display:block;font-family:var(--mono);font-weight:400;font-size:11px;color:var(--t3)}
 .checklist li.lgrp{background:none;padding:10px 10px 2px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);font-weight:600}
@@ -469,7 +466,7 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
 .mh h2{margin:0;font-size:14px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mb{padding:16px;display:flex;flex-direction:column;gap:12px;overflow:auto}
 .mf{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--panel-2);flex:none}
-.palette{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-3);overflow:hidden;animation:pop var(--med) var(--ease)}
+.palette{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:var(--r3);box-shadow:var(--sh-3);overflow:hidden;animation:pop var(--med) var(--ease)}
 .palette .search{margin:8px}
 .palette .search input{height:42px;font-size:14px;background:var(--panel)}
 .pal-list{max-height:52vh;overflow:auto;padding:0 8px 8px}
@@ -494,7 +491,7 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
 .checklist b{font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .checklist span{color:var(--t3);font-size:12px;flex:none}
 .checklist>li>span:last-of-type{max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ctxmenu{position:fixed;z-index:45;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh-3);padding:4px;display:none;animation:pop var(--fast) var(--ease)}
+.ctxmenu{position:fixed;z-index:45;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r2);box-shadow:var(--sh-3);padding:4px;display:none;animation:pop var(--fast) var(--ease)}
 .ctxmenu[data-open="true"]{display:block}
 .ctxmenu[data-open="closing"]{display:block;pointer-events:none;animation:popout 120ms var(--ease) forwards}
 .ctxmenu button{display:flex;align-items:center;gap:8px;width:100%;padding:7px 9px;border-radius:var(--r1);text-align:left;font-weight:500;color:var(--t1)}
@@ -511,16 +508,16 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
 @media (min-width:901px) and (max-width:1180px){
   .app,.app[data-right="closed"]{grid-template-columns:var(--left) 1fr 0}
   .app[data-left="closed"],.app[data-left="closed"][data-right="closed"]{grid-template-columns:0 1fr 0}
-  .panel.right{position:fixed;top:var(--top);bottom:0;right:0;width:var(--right);z-index:30;box-shadow:var(--sh-3);transform:translateX(100%);transition:transform var(--med) var(--ease)}
-  .app[data-right="open"] .panel.right{transform:none}
+  .panel.right{position:fixed;top:var(--top);bottom:0;right:0;width:var(--right);z-index:30;box-shadow:var(--sh-3);transform:translateX(100%);visibility:hidden;transition:transform var(--med) var(--ease),visibility 0s linear var(--med)}
+  .app[data-right="open"] .panel.right{transform:none;visibility:visible;transition:transform var(--med) var(--ease),visibility 0s}
   .panel.right .resizer{display:none}
 }
 @media (max-width:900px){
   .app{grid-template-columns:1fr!important}
   .stage{grid-column:1}
-  .panel.left,.panel.right{position:fixed;top:var(--top);bottom:0;width:min(86vw,340px);z-index:40;box-shadow:var(--sh-3);transform:translateX(-100%);transition:transform var(--med) var(--ease)}
+  .panel.left,.panel.right{position:fixed;top:var(--top);bottom:0;width:min(86vw,340px);z-index:40;box-shadow:var(--sh-3);transform:translateX(-100%);visibility:hidden;transition:transform var(--med) var(--ease),visibility 0s linear var(--med)}
   .panel.right{right:0;left:auto;transform:translateX(100%)}
-  .app[data-left="open"] .panel.left,.app[data-right="open"] .panel.right{transform:none}
+  .app[data-left="open"] .panel.left,.app[data-right="open"] .panel.right{transform:none;visibility:visible;transition:transform var(--med) var(--ease),visibility 0s}
   .panel>*:not(.resizer){min-width:0}
   .resizer{display:none}
   .topbar{grid-template-columns:auto 1fr auto;padding:0 6px;gap:4px}
@@ -557,7 +554,7 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
   [data-tip]::after{display:none}
   .choice:hover{border-color:var(--fl2)}
 }
-@media (max-width:560px){#dockExit{width:32px;padding:0;font-size:0;gap:0}.g2,.g3{grid-template-columns:1fr}.shortcuts{grid-template-columns:1fr}.topbar .seg button{padding:0 10px}.topbar .seg button svg,#publishBtn svg,.name-btn svg{display:none}#publishBtn{padding:0 12px}.typegrid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){#dockExit{width:32px;padding:0;gap:0}#dockExit span{display:none}.g2{grid-template-columns:1fr}.shortcuts{grid-template-columns:1fr}.topbar .seg button{padding:0 10px}.topbar .seg button svg,#publishBtn svg,.name-btn svg{display:none}#publishBtn{padding:0 12px}.typegrid{grid-template-columns:1fr 1fr}}
 /* Touch: 40px tree rows, and every small control gets an invisible hit area of at least 40px. */
 @media (pointer:coarse){
   .row,.row.fld,.row.sect{height:40px}
@@ -646,7 +643,7 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
 <div class="app" id="app" data-left="open" data-right="open" data-mode="edit">
   <header class="topbar">
     <div class="l">
-      <button class="btn ghost icon" id="toggleLeft" data-tip="Structure  ⌘\" data-tip-pos="bottom" aria-label="Toggle structure panel"><svg width="16" height="16"><use href="#i-sidebar"/></svg></button>
+      <button class="btn ghost icon" id="toggleLeft" data-tip="Structure  ⌘\" data-tip-pos="bottom-start" aria-label="Toggle structure panel"><svg width="16" height="16"><use href="#i-sidebar"/></svg></button>
       <div class="logo"><span class="mark" id="topMark"><svg width="14" height="14"><use href="#i-pylon"/></svg></span><span class="w">Pylon</span></div>
       <span class="sep">/</span>
       <button class="name-btn" id="nameBtn" data-tip="Rename form" data-tip-pos="bottom"><span id="formName">Loan application</span><svg width="14" height="14"><use href="#i-chev"/></svg></button>
@@ -659,8 +656,8 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
       </div>
     </div>
     <div class="r">
-      <button class="btn primary" id="publishBtn" data-tip-pos="bottom"><svg width="14" height="14"><use href="#i-send"/></svg><span>Publish</span><span class="cnt" id="pubCount" hidden></span></button>
-      <button class="btn ghost icon" id="toggleRight" data-tip="Inspector  ⌘/" data-tip-pos="bottom" aria-label="Toggle inspector panel"><svg width="16" height="16"><use href="#i-sidebar-r"/></svg></button>
+      <button class="btn primary" id="publishBtn" data-tip-pos="bottom-end"><svg width="14" height="14"><use href="#i-send"/></svg><span>Publish</span><span class="cnt" id="pubCount" hidden></span></button>
+      <button class="btn ghost icon" id="toggleRight" data-tip="Inspector  ⌘/" data-tip-pos="bottom-end" aria-label="Toggle inspector panel"><svg width="16" height="16"><use href="#i-sidebar-r"/></svg></button>
     </div>
   </header>
 
@@ -703,7 +700,7 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
       <button id="dockRestart" class="ts" data-tip="Start over" aria-label="Start over"><svg width="16" height="16"><use href="#i-refresh"/></svg></button>
       <button id="dockPersona" class="ts wide" aria-haspopup="menu"><svg width="16" height="16"><use href="#i-person"/></svg><span id="dockPersonaL">Start as…</span></button>
       <span class="sep ts"></span>
-      <button id="dockExit" class="ts wide" aria-label="Back to editing"><svg width="16" height="16"><use href="#i-cursor"/></svg>Back to editing</button>
+      <button id="dockExit" class="ts wide" aria-label="Back to editing"><svg width="16" height="16"><use href="#i-cursor"/></svg><span>Back to editing</span></button>
     </div>
   </main>
 
@@ -1013,7 +1010,7 @@ function fieldWrap(f){
 /* ============================================================
    Render: inspector
    ============================================================ */
-const secOpen = { content:true, options:true, data:true, conditions:false, appearance:false, css:false, screen:true, section:true, logo:true, color:true, scheme:true, type:true, shape:true, styles:false, install:true, embedopts:true, coverage:false, advanced:false };
+const secOpen = { content:true, options:true, data:true, conditions:false, appearance:false, screen:true, section:true, logo:true, color:true, scheme:true, type:true, shape:true, styles:false, install:true, embedopts:true, coverage:false, advanced:false };
 const sec = (k, title, body, hint='') => `<div class="sec" data-sec="${k}" data-open="${secOpen[k]!==false}"><button class="sec-h" data-act="sec" aria-expanded="${secOpen[k]!==false}">${title}${hint?`<span class="hint">${hint}</span>`:''}<span class="chev">${icon('i-chev')}</span></button><div class="sec-w"><div><div class="sec-b">${body}</div></div></div></div>`;
 const selectHtml = (name, value, items, attrs='') => `<div class="selw"><select class="ctl" data-bind="${name}" ${attrs}>${items.map(([v,l])=>`<option value="${esc(v)}" ${String(v)===String(value)?'selected':''}>${esc(l)}</option>`).join('')}</select></div>`;
 const input = (name, value, ph='', attrs='') => `<input class="ctl" data-bind="${name}" value="${esc(value)}" placeholder="${esc(ph)}" ${attrs}>`;
@@ -1122,7 +1119,7 @@ function renderCode(){
   const install = `<div class="f"><span class="lb">Show it</span><div class="segi full" data-seg="embed.mode"><button aria-pressed="${e.mode==='inline'}" data-v="inline">On a page</button><button aria-pressed="${e.mode==='modal'}" data-v="modal">As a pop-up</button><button aria-pressed="${e.mode==='hosted'}" data-v="hosted">Hosted link</button></div></div>
     <div class="f"><span class="lb">Version</span><div class="segi full" data-seg="embed.version"><button aria-pressed="${e.version==='live'}" data-v="live">Live</button><button aria-pressed="${e.version==='draft'}" data-v="draft">Draft</button></div><span class="sub">${e.version==='draft'?'Shows unpublished changes. For a staging page only.':'What borrowers see. Updates when you publish.'}</span></div>
     ${e.mode==='hosted' ? `<div class="f"><label>Link</label><div class="map"><span class="mi">${icon('i-link')}</span><span class="mt"><b>${esc(snip)}</b><span>Share it, print it, or put it behind a button</span></span><button data-act="copysnip" data-tip="Copy link" data-tip-pos="left">${icon('i-copy')}</button></div></div>`
-    : `<div class="f"><label>${e.mode==='modal'?'Button and script':'Snippet'}</label><textarea class="ctl code snip" id="snipBox" readonly rows="3" spellcheck="false">${esc(snip)}</textarea><span class="sub">${e.mode==='modal'?'Put the button anywhere on the page and the script once, before </body>.':'Paste it where the form should appear.'}</span></div><div class="btnrow"><button class="btn sm" data-act="copysnip">${icon('i-copy')}Copy snippet</button></div>`}`;
+    : `<div class="f"><label>${e.mode==='modal'?'Button and script':'Snippet'}</label><textarea class="ctl code snip" readonly rows="3" spellcheck="false">${esc(snip)}</textarea><span class="sub">${e.mode==='modal'?'Put the button anywhere on the page and the script once, before </body>.':'Paste it where the form should appear.'}</span></div><div class="btnrow"><button class="btn sm" data-act="copysnip">${icon('i-copy')}Copy snippet</button></div>`}`;
   const options = `${sw('embed.prefill', e.prefill, 'Prefill from the page URL', 'Reads lo, source and campaign parameters')}
     ${sw('embed.events', e.events, 'Send page events', 'pylon:step and pylon:complete, for analytics')}
     <div class="f"><span class="lb">Look</span><div class="segi full" data-seg="embed.theme"><button aria-pressed="${e.theme==='brand'}" data-v="brand">Form’s brand</button><button aria-pressed="${e.theme==='inherit'}" data-v="inherit">Match the site</button></div><span class="sub">${e.theme==='inherit'?'Uses the page’s font and colours; the Style tab’s shape still applies.':'Uses the Brand and Style tabs.'}</span></div>`;
@@ -1175,7 +1172,7 @@ function computeIssues(){
   const byId = {}; for(const i of issues){ const k = i.go?.id; if(k && (!byId[k] || i.sev==='block')) byId[k] = i.sev; }
   return { issues, byId, blockers: issues.filter(i=>i.sev==='block').length, warnings: issues.filter(i=>i.sev==='warn').length };
 }
-function syncIssues(){ const c = $('#pubCount'); c.hidden = !ui.iss.blockers; c.textContent = ui.iss.blockers; $('#publishBtn').dataset.tip = ui.iss.blockers ? `${ui.iss.blockers} to fix before publishing` : ''; }
+function syncIssues(){ const c = $('#pubCount'); c.hidden = !ui.iss.blockers; c.textContent = ui.iss.blockers; const b = $('#publishBtn'); if(ui.iss.blockers) b.dataset.tip = `${ui.iss.blockers} to fix before publishing`; else delete b.dataset.tip; }
 const an = w => (/^[aeiou]/.test(w) ? 'an ' : 'a ') + w;
 function fixLabel(x){ return {add:'Add', map:'Choose', type:`Make it ${an(TYPES[x.type]?.label.toLowerCase())}`, stdopts:'Use standard options', addscreen:'Add screen', brand:'Open brand'}[x.t]; }
 function addFromSchema(path){ const sc = schemaOf(path); const screen = currentScreen() || allScreens().slice(-1)[0]; if(!sc || !screen) return; commit(()=>{ const f = fieldFromSchema(sc); screen.open = true; screen.fields.push(f); sel = {kind:'field', id:f.id}; }); toast(`Added “${sc.label}”`, 'ok'); }
@@ -1434,7 +1431,7 @@ function applyBind(key, val, el){
   t[key] = val;
 }
 function applyBrand(){ const b = state.brand; const c = b.color==='custom' ? b.custom : BRAND[b.color]||BRAND.ink; const root = document.documentElement; root.style.setProperty('--brand', c); root.style.setProperty('--brand-fg', contrast(c)); }
-function contrast(hex){ const h = hex.replace('#',''); const [r,g,b] = [0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)); return (0.2126*r+0.7152*g+0.0722*b) > .4 ? '#111112' : '#ffffff'; }
+function contrast(hex){ return lum(hex) > .4 ? '#111112' : '#ffffff'; }
 function download(name, text){ const blob = new Blob([text],{type:'application/json'}); const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),500); if(window.claude?.downloads?.save) window.claude.downloads.save({name, data:text, type:'application/json'}).catch(()=>{}); }
 
 /* ============================================================
@@ -1462,7 +1459,7 @@ function openTypePicker(screenId){
   const screen = screenId ? find({kind:'screen',id:screenId})?.screen : currentScreen(); if(!screen) return toast('Add a screen first','warn');
   const pane = ui.addPane || 'data';
   modal(`<div class="mh"><h2>Add to “${esc(screen.title)}”</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
-    <div class="mb"><div class="segi full" id="addTabs"><button aria-pressed="${pane==='data'}" data-pane="data">Loan data</button><button aria-pressed="${pane==='type'}" data-pane="type">Question type</button></div>
+    <div class="mb"><div class="segi full"><button aria-pressed="${pane==='data'}" data-pane="data">Loan data</button><button aria-pressed="${pane==='type'}" data-pane="type">Question type</button></div>
       <div class="search" style="margin:0"><svg width="14" height="14"><use href="#i-search"/></svg><input id="typeQ" placeholder="${pane==='data'?'Search loan data':'Filter types'}" autocomplete="off"></div>
       <ul class="checklist" id="schemaList" ${pane==='data'?'':'hidden'}>${schemaRows({needed:true})}</ul>
       <div class="typegrid" id="typeGrid" ${pane==='type'?'':'hidden'}>${Object.entries(TYPES).map(([k,v])=>`<button class="typecard" data-type="${k}"><span class="ico">${icon(v.icon,16)}</span><b>${v.label}</b><span>${v.desc}</span></button>`).join('')}</div></div>`,
@@ -1590,7 +1587,7 @@ function openJson(){
 }
 const LIBRARY = [['Co-borrower email','email','coborrower.email'],['Preferred language','select','borrower.language',['English','Spanish','Mandarin','Vietnamese']],['How did you hear about us?','choice','marketing.source',['Referral','Search','Social','Other']],['Down payment amount','currency','loan.down_payment'],['Estimated credit score','select','credit.self_reported',['760+','720–759','680–719','640–679','Below 640']],['Rate lock preference','choice','loan.rate_lock',['Lock now','Float','Not sure']],['Mailing address','address','borrower.mailing.street'],['Best time to call','select','borrower.contact_window',['Morning','Afternoon','Evening']]];
 function openLibrary(){ const scr = currentScreen(); if(!scr) return toast('Pick a screen first','warn');
-  modal(`<div class="mh"><h2>Question library</h2><span class="pill">Adds to “${esc(scr.title)}”</span><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div><div class="mb"><div class="search" style="margin:0"><svg width="14" height="14"><use href="#i-search"/></svg><input id="libQ" placeholder="Search library" autocomplete="off"></div><ul class="checklist" id="libList">${LIBRARY.map(([l,t,m],i)=>`<li class="clk" data-lib="${i}"><span class="ico" style="color:var(--t3)">${icon(TYPES[t].icon)}</span><b>${l}</b><span>${TYPES[t].label}</span></li>`).join('')}</ul></div>`,
+  modal(`<div class="mh"><h2>Question library</h2><span class="pill">Adds to “${esc(scr.title)}”</span><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div><div class="mb"><div class="search" style="margin:0"><svg width="14" height="14"><use href="#i-search"/></svg><input id="libQ" placeholder="Search library" autocomplete="off"></div><ul class="checklist">${LIBRARY.map(([l,t,m],i)=>`<li class="clk" data-lib="${i}"><span class="ico" style="color:var(--t3)">${icon(TYPES[t].icon)}</span><b>${l}</b><span>${TYPES[t].label}</span></li>`).join('')}</ul></div>`,
   m => { const q=$('#libQ',m); q.oninput=()=>$$('li',m).forEach(li=>li.hidden=!li.textContent.toLowerCase().includes(q.value.toLowerCase())); m.addEventListener('click', e=>{ const li=e.target.closest('[data-lib]'); if(!li) return; const [l,t,map,o]=LIBRARY[+li.dataset.lib]; closeModal(); commit(()=>{ const f=F(l,t,{map}); if(o) f.options=opts(...o); scr.open=true; scr.fields.push(f); sel={kind:'field',id:f.id}; }); toast(`Added “${l}”`,'ok'); }); q.focus(); }); }
 function openForms(){ const forms=[['Loan application','5361ace','Live · edited today',true],['Loan application (Spanish)','a91c0f2','Draft · 3 days ago'],['HELOC intake','77be104','Draft · last week']]; modal(`<div class="mh"><h2>Saved forms</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div><div class="mb"><ul class="checklist">${forms.map(([n,r,s,cur])=>`<li class="clk"><span class="ico" style="color:var(--t3)">${icon('i-form')}</span><b>${n}</b><span class="pill mono" style="margin-right:6px">${r}</span><span>${cur?'Open now':s}</span></li>`).join('')}</ul><div class="note">${icon('i-info')}<span>Only this form is stored in the prototype.</span></div></div>`, m=>m.addEventListener('click',e=>{ if(e.target.closest('li')){ closeModal(); toast('Only this form is available in the prototype'); } })); }
 function newForm(){ modal(`<div class="mh"><h2>New form</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div><div class="mb"><div class="f"><label>Name</label><input class="ctl" id="newName" placeholder="e.g. HELOC intake"></div><div class="f"><label>Start from</label>${selectHtml('tpl','blank',[['blank','Blank'],['copy','Copy of this form'],['sample','Sample loan application']])}</div></div><div class="mf"><button class="btn" data-close>Cancel</button><button class="btn primary" id="mkForm">Create</button></div>`, m=>{ const go=()=>{ const n=$('#newName').value.trim()||'Untitled form'; const tpl=$('[data-bind=tpl]',m).value; closeModal(); commit(()=>{ if(tpl==='blank'){ state={name:n, brand:clone(state.brand), style:clone(state.style), styles:[], sections:[SEC('Getting started',[S('Welcome',[])],{open:true})]}; } else if(tpl==='sample'){ state=seed(); state.name=n; } else { state=clone(state); state.name=n; } sel={kind:'screen',id:state.sections[0].screens[0].id}; }); $('#formName').textContent=state.name; applyBrand(); toast(`Created “${n}”`,'ok'); }; $('#mkForm',m).onclick=go; $('#newName').onkeydown=e=>{ if(e.key==='Enter') go(); }; }); }
