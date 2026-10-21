@@ -81,6 +81,7 @@ svg{display:block;flex:none}
 .btn.danger{background:var(--err);border-color:var(--err);color:#fff}.btn.danger:hover{background:color-mix(in srgb,var(--err) 88%,#000);border-color:transparent}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .btn .kbd{margin-left:2px}
+.btn .cnt{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--err);color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center;margin:0 -3px 0 1px}
 
 /* Segmented control */
 /* Segmented control, 32px (26px buttons + 2px padding + 1px border). .seg.round is the 28px capsule variant. */
@@ -174,7 +175,7 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 .node.scr>.kids>div::before{content:"";position:absolute;left:14px;top:2px;bottom:4px;width:1px;background:var(--line)}
 .row .ico{width:16px;height:16px;display:grid;place-items:center;color:var(--t3);flex:none}
 .row.fld{height:28px}
-.row .flag{width:6px;height:6px;border-radius:50%;background:var(--warn);flex:none;margin:0 4px}
+.row .flag{width:6px;height:6px;border-radius:50%;background:var(--warn);flex:none;margin:0 4px}.row .flag.block{background:var(--err)}
 .row .more{width:24px;height:24px;display:grid;place-items:center;border-radius:var(--r1);color:var(--t3);opacity:0;flex:none;transition:opacity var(--fast),background var(--fast)}
 .row:hover .more,.row:focus-within .more{opacity:1}
 .row .more:hover{background:var(--ink-soft-2);color:var(--t1)}
@@ -235,6 +236,7 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 .stage[data-mode="edit"] .fw.sel .hd>*{pointer-events:auto}
 .fw .tag{height:20px;display:inline-flex;align-items:center;padding:0 7px;border-radius:var(--r1);font-size:11px;font-weight:600;color:var(--ft2);background:var(--fp);box-shadow:inset 0 0 0 1px var(--fl2)}
 .fw.sel .tag{color:#fff;background:var(--sel);box-shadow:none}
+.fw .tag .dot{width:6px;height:6px;border-radius:50%;background:var(--warn);margin-left:5px}.fw .tag .dot.block{background:var(--err)}.fw.sel .tag .dot{background:#fff}
 .fw .fx{display:flex;padding:0 2px;border-radius:var(--r1);background:var(--fp);box-shadow:inset 0 0 0 1px var(--fl2);opacity:0;transition:opacity var(--fast)}
 .fw.sel .fx{opacity:1}
 .fw .fx button{width:20px;height:20px;border-radius:var(--r1);display:grid;place-items:center;color:var(--ft2);transition:background var(--fast),color var(--fast)}
@@ -391,6 +393,13 @@ textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background
 .map .mt span{font-size:11px;color:var(--t3)}
 .map button{color:var(--t3);width:24px;height:24px;border-radius:var(--r1);display:grid;place-items:center;flex:none;transition:background var(--fast),color var(--fast)}
 .map button:hover{background:var(--ink-soft);color:var(--t1)}
+.map button.mt{width:auto;height:auto;display:block;flex:1;text-align:left;color:inherit;padding:2px 4px;margin:-2px -4px}
+.map button.mt:hover{background:var(--ink-soft)}
+.checklist b .sub2,.checklist li .sub2{display:block;font-family:var(--mono);font-weight:400;font-size:11px;color:var(--t3)}
+.checklist li.lgrp{background:none;padding:10px 10px 2px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);font-weight:600}
+.checklist li[aria-disabled="true"]{opacity:.5}
+.checklist .btn{flex:none}
+.checklist .ci.block{background:var(--err)}
 .cond{display:flex;flex-direction:column;gap:6px;padding:8px;border:1px solid var(--line);border-radius:var(--r2);background:var(--panel-2)}
 .cond .cl{display:grid;grid-template-columns:44px 1fr;gap:6px;align-items:center}
 .cond .cl .w{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
@@ -483,6 +492,7 @@ textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background
 .checklist .ci.ok{background:var(--ok)}.checklist .ci.warn{background:var(--warn)}.checklist .ci.chg{background:var(--ink-soft-2);color:var(--t2)}
 .checklist b{font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .checklist span{color:var(--t3);font-size:12px;flex:none}
+.checklist>li>span:last-of-type{max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ctxmenu{position:fixed;z-index:45;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh-3);padding:4px;display:none;animation:pop var(--fast) var(--ease)}
 .ctxmenu[data-open="true"]{display:block}
 .ctxmenu[data-open="closing"]{display:block;pointer-events:none;animation:popout 120ms var(--ease) forwards}
@@ -648,7 +658,7 @@ textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background
       </div>
     </div>
     <div class="r">
-      <button class="btn primary" id="publishBtn"><svg width="14" height="14"><use href="#i-send"/></svg><span>Publish</span></button>
+      <button class="btn primary" id="publishBtn" data-tip-pos="bottom"><svg width="14" height="14"><use href="#i-send"/></svg><span>Publish</span><span class="cnt" id="pubCount" hidden></span></button>
       <button class="btn ghost icon" id="toggleRight" data-tip="Inspector  ⌘/" data-tip-pos="bottom" aria-label="Toggle inspector panel"><svg width="16" height="16"><use href="#i-sidebar-r"/></svg></button>
     </div>
   </header>
@@ -737,14 +747,52 @@ const HAS_OPTS = t => ['choice','multi','select'].includes(t);
 const FONTS = { inter:{label:'Inter',css:"'Inter',system-ui,sans-serif"}, manrope:{label:'Manrope',css:"'Manrope',system-ui,sans-serif"}, plex:{label:'IBM Plex Sans',css:"'IBM Plex Sans',system-ui,sans-serif"}, serif:{label:'Source Serif',css:"'Source Serif 4',Georgia,serif"}, system:{label:'System UI',css:"system-ui,-apple-system,sans-serif"} };
 const BRAND = { ink:'#18181a', ocean:'#2563eb', indigo:'#6d4aff', forest:'#15803d', rose:'#e11d48', amber:'#d97706', teal:'#0d9488', slate:'#475569' };
 const US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
-const MAPPINGS = ['property.purpose','property.search_stage','property.type','property.occupancy','property.state','property.county','property.address.street','property.address.unit','property.address.city','property.address.zip','property.purchase_price','property.estimated_value','property.rent','property.hoa','loan.cash_out','loan.roll_closing_costs','loan.escrow','loan.target_close','loan.deposit_paid','borrower.first_name','borrower.middle_name','borrower.last_name','borrower.email','borrower.phone','borrower.phone_type','borrower.dob','borrower.marital','borrower.citizenship','borrower.military','borrower.prior_owner','borrower.has_dependents','borrower.current.street','borrower.current.city','borrower.current.zip','borrower.current.status','borrower.current.payment','income.status','income.employer','income.base','assets.liquid','assets.gift','credit.soft_pull_consent','declarations.bankruptcy','declarations.judgments','consent.contact','consent.info_use','application.attest','hmda.ethnicity','hmda.sex','entity.name','entity.type'];
 
 let uid = 1; const id = p => p + '_' + (uid++).toString(36);
 const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+/* Loan-file schema the builder maps to. A `req` path must be collected by every published form.
+   Stand-in for the LOS field list; swap the entries, the rest of the builder reads them. */
+const SCHEMA_GROUPS = ['Borrower','Property','Loan','Income & assets','Credit & declarations','Demographics','Consent & attestation','Business entity','Marketing'];
+const S_ = (path, label, group, type, x={}) => ({path, label, group, type, ...x});
+const E = (...l) => l.map(x=>[slug(x), x]);
+const SCHEMA = [
+  S_('borrower.first_name','First name','Borrower','text',{req:true}), S_('borrower.middle_name','Middle name','Borrower','text'), S_('borrower.last_name','Last name','Borrower','text',{req:true}),
+  S_('borrower.email','Email','Borrower','email',{req:true, validation:'email'}), S_('borrower.phone','Phone','Borrower','phone',{req:true, validation:'phone'}), S_('borrower.phone_type','Phone type','Borrower','choice',{enum:E('Mobile','Home','Work')}),
+  S_('borrower.dob','Date of birth','Borrower','date',{validation:'adult'}), S_('borrower.marital','Marital status','Borrower','choice',{enum:E('Married','Unmarried','Separated')}), S_('borrower.citizenship','Citizenship','Borrower','choice',{enum:E('U.S. citizen','Permanent resident','Non-permanent resident')}),
+  S_('borrower.military','Military service','Borrower','yesno'), S_('borrower.prior_owner','Owned property in the last 3 years','Borrower','yesno'), S_('borrower.has_dependents','Has dependents','Borrower','yesno'), S_('borrower.dependent_ages','Dependent ages','Borrower','text'),
+  S_('borrower.language','Preferred language','Borrower','select',{enum:E('English','Spanish','Mandarin','Vietnamese')}), S_('borrower.contact_window','Best time to call','Borrower','select',{enum:E('Morning','Afternoon','Evening')}),
+  S_('borrower.current.street','Current street address','Borrower','address'), S_('borrower.current.city','Current city','Borrower','text'), S_('borrower.current.zip','Current ZIP','Borrower','text',{validation:'zip'}), S_('borrower.current.status','Rent or own','Borrower','choice',{enum:E('Own','Rent','Live rent-free')}), S_('borrower.current.payment','Monthly housing payment','Borrower','currency'), S_('borrower.current.move_in','Move-in date','Borrower','date'),
+  S_('borrower.mailing.street','Mailing address','Borrower','address'), S_('coborrower.email','Co-borrower email','Borrower','email',{validation:'email'}), S_('application.coborrower','Adding a co-borrower','Borrower','yesno'),
+  S_('property.purpose','Loan purpose','Property','choice',{req:true, enum:E('Buy a home','Refinance')}), S_('property.search_stage','Home search stage','Property','choice',{enum:E('Just getting started','Actively looking','Under contract')}), S_('property.type','Property type','Property','choice',{enum:E('Single family','Condo','Townhouse','Multi-family')}),
+  S_('property.occupancy','Occupancy','Property','choice',{req:true, enum:E('Primary residence','Second home','Investment')}), S_('property.attached','Attached to a neighbor','Property','yesno'), S_('property.state','Property state','Property','select'), S_('property.county','County','Property','text'),
+  S_('property.address.street','Property street address','Property','address',{req:true}), S_('property.address.unit','Unit','Property','text'), S_('property.address.city','Property city','Property','text'), S_('property.address.zip','Property ZIP','Property','text',{validation:'zip'}),
+  S_('property.purchase_price','Purchase price','Property','currency',{validation:'positive'}), S_('property.estimated_value','Estimated value','Property','currency',{validation:'positive'}), S_('property.rent','Expected monthly rent','Property','currency'), S_('property.hoa','Monthly HOA dues','Property','currency'),
+  S_('loan.cash_out','Cash out amount','Loan','currency'), S_('loan.roll_closing_costs','Roll in closing costs','Loan','yesno'), S_('loan.escrow','Escrow taxes and insurance','Loan','yesno'), S_('loan.target_close','Target closing date','Loan','date'), S_('loan.deposit_paid','Deposit paid','Loan','currency'), S_('loan.down_payment','Down payment','Loan','currency'), S_('loan.rate_lock','Rate lock preference','Loan','choice',{enum:E('Lock now','Float','Not sure')}),
+  S_('income.status','Employment status','Income & assets','choice',{req:true, enum:E('Employed','Self-employed','Retired','Not employed')}), S_('income.employer','Employer','Income & assets','text'), S_('income.base','Annual base income','Income & assets','currency',{validation:'positive'}), S_('assets.liquid','Liquid assets','Income & assets','currency'), S_('assets.gift','Expecting gift funds','Income & assets','yesno'),
+  S_('credit.soft_pull_consent','Soft credit pull consent','Credit & declarations','yesno'), S_('credit.self_reported','Self-reported credit score','Credit & declarations','select',{enum:E('760+','720–759','680–719','640–679','Below 640')}), S_('declarations.bankruptcy','Bankruptcy in the last 7 years','Credit & declarations','yesno'), S_('declarations.judgments','Outstanding judgments','Credit & declarations','yesno'),
+  S_('hmda.ethnicity','Ethnicity','Demographics','multi',{enum:E('Hispanic or Latino','Not Hispanic or Latino','Prefer not to say')}), S_('hmda.sex','Sex','Demographics','choice',{enum:E('Female','Male','Prefer not to say')}),
+  S_('consent.contact','Contact permissions','Consent & attestation','multi',{enum:E('Email','Phone','Text message')}), S_('consent.info_use','Consent to use information','Consent & attestation','yesno',{req:true}), S_('application.attest','Accuracy attestation','Consent & attestation','yesno',{req:true}),
+  S_('borrower.entity','Closing in a business name','Business entity','yesno'), S_('entity.name','Business name','Business entity','text'), S_('entity.type','Business type','Business entity','select',{enum:E('LLC','Corporation','Partnership','Trust')}),
+  S_('marketing.source','How they heard about us','Marketing','choice',{enum:E('Referral','Search','Social','Other')}),
+];
+const SCHEMA_BY = Object.fromEntries(SCHEMA.map(x=>[x.path,x]));
+const schemaOf = m => SCHEMA_BY[m] || null;
+const isCustom = m => /^custom\.[a-z0-9_]+$/.test(m||'');
+const mapTitle = m => schemaOf(m)?.label || (isCustom(m) ? m.slice(7).replace(/_/g,' ') : (m||''));
+const REQUIRED_PATHS = SCHEMA.filter(x=>x.req).map(x=>x.path);
+/* Field types that can store each schema type. */
+const COMPAT = { text:['text','textarea','select','choice'], email:['email','text'], phone:['phone','text'], date:['date'], currency:['currency','number'], number:['number','currency','text'], address:['address','text'], yesno:['yesno','choice'], choice:['choice','select'], multi:['multi'], select:['select','choice'] };
+const stdOptions = sc => sc.enum.map(([v,l])=>({id:id('o'), label:l, value:v, manual:true}));
+const hasStdOptions = (f, sc) => !!sc?.enum && f.options.map(o=>o.value).join('\u0000')===sc.enum.map(e=>e[0]).join('\u0000');
 const opts = (...o) => o.map(l => ({ id:id('o'), label:l, value:slug(l) }));
 const F = (label, type, x={}) => ({ id:id('f'), label, type, required:true, description:'', map:'', validation:'none', width:'auto', remember:true, options:[], conditions:[], ...x });
 const S = (title, fields, x={}) => ({ id:id('s'), title, description:'', fields, conditions:[], open:false, ...x });
 const SEC = (title, screens, x={}) => ({ id:id('sec'), title, screens, open:false, ...x });
+/* A field built from the schema arrives typed, labelled, mapped and validated; standard options come with it. */
+function fieldFromSchema(sc){ const f = F(sc.label, sc.type, { map:sc.path, required:!!sc.req, validation:sc.validation||'none' }); if(sc.enum) f.options = stdOptions(sc); if(sc.path==='property.state') f.optsrc='states'; return f; }
+/* Mapping an existing field adopts what the schema knows, without overwriting what the author already wrote. */
+function setMap(f, path){ f.map = path; const sc = schemaOf(path); if(!sc) return; const fresh = !f.label.trim() || f.label==='New question'; if(fresh){ f.label = sc.label; f.type = sc.type; f.required = !!sc.req; } if(f.validation==='none' && sc.validation) f.validation = sc.validation; if(sc.enum && HAS_OPTS(f.type) && (!f.options.length || f.options.every(o=>/^Option \d+$/.test(o.label)))) f.options = stdOptions(sc); if(sc.path==='property.state' && f.type==='select') f.optsrc='states'; }
+function uniqueValue(f, base, selfId){ let v = base || 'option', n = 2; while(f.options.some(o=>o.id!==selfId && o.value===v)) v = `${base}_${n++}`; return v; }
 
 function seed(){
   uid = 1;
@@ -844,7 +892,7 @@ function importForm(j){ if(!Array.isArray(j.sections)) throw new Error('needs a 
 const match = t => !ui.query || t.toLowerCase().includes(ui.query.toLowerCase());
 function hl(text){ if(!ui.query) return esc(text); const q = ui.query.toLowerCase(); const i = text.toLowerCase().indexOf(q); if(i<0) return esc(text); return esc(text.slice(0,i)) + '<mark>' + esc(text.slice(i,i+q.length)) + '</mark>' + esc(text.slice(i+q.length)); }
 function renderTree(){
-  const tree = $('#tree'); let html=''; let nS=0,nF=0;
+  const tree = $('#tree'); let html=''; let nS=0,nF=0; ui.iss = computeIssues(); syncIssues();
   for(const sec of state.sections){
     nS += sec.screens.length; nF += sec.screens.reduce((a,s)=>a+s.fields.length,0);
     const screens = sec.screens.filter(scr => !ui.query || match(sec.title) || match(scr.title) || scr.fields.some(f=>match(f.label)));
@@ -859,19 +907,20 @@ function renderTree(){
     for(const scr of screens){
       const fields = scr.fields.filter(f => !ui.query || match(f.label) || match(scr.title) || match(sec.title));
       const sopen = ui.query ? true : !!scr.open;
-      const warn = scr.fields.some(f=>!f.map);
+      const sevs = scr.fields.map(f=>ui.iss.byId[f.id]); const sev = ui.iss.byId[scr.id]==='block' || sevs.includes('block') ? 'block' : ui.iss.byId[scr.id] || sevs.find(Boolean) || '';
+      const flag = v => v ? `<span class="flag ${v}" data-tip="${v==='block'?'Fix before publishing':'Worth a look'}" data-tip-pos="left"></span>` : '';
       html += `<div class="node scr" data-kind="screen" data-id="${scr.id}" data-open="${sopen}" draggable="true">
         <div class="row scr" role="treeitem" aria-selected="${sel.kind==='screen'&&sel.id===scr.id}" aria-expanded="${sopen}" tabindex="0">
           <button class="caret" data-act="toggle" tabindex="-1" aria-label="Toggle">${icon('i-chev')}</button>
           <span class="ico">${icon('i-screen')}</span><span class="lbl">${hl(scr.title)}</span>
-          ${warn?'<span class="flag" data-tip="A field isn’t saved anywhere" data-tip-pos="left"></span>':''}${scr.conditions?.length?`<span class="ico" data-tip="Conditional" data-tip-pos="left">${icon('i-branch')}</span>`:''}
+          ${flag(sev)}${scr.conditions?.length?`<span class="ico" data-tip="Conditional" data-tip-pos="left">${icon('i-branch')}</span>`:''}
           <button class="more" data-act="menu" tabindex="-1" aria-label="More">${icon('i-more')}</button></div>
         <div class="kids"><div>`;
       for(const f of fields){
         html += `<div class="node fld" data-kind="field" data-id="${f.id}" draggable="true">
           <div class="row fld" role="treeitem" aria-selected="${sel.kind==='field'&&sel.id===f.id}" tabindex="0">
             <span class="caret-sp" aria-hidden="true"></span><span class="ico" data-tip="${TYPES[f.type].label}" data-tip-pos="left">${icon(TYPES[f.type].icon)}</span>
-            <span class="lbl">${hl(f.label)}</span>${f.conditions?.length?`<span class="ico" data-tip="Conditional" data-tip-pos="left">${icon('i-branch')}</span>`:''}
+            <span class="lbl">${hl(f.label)}</span>${flag(ui.iss.byId[f.id])}${f.conditions?.length?`<span class="ico" data-tip="Conditional" data-tip-pos="left">${icon('i-branch')}</span>`:''}
             <button class="more" data-act="menu" tabindex="-1" aria-label="More">${icon('i-more')}</button></div></div>`;
       }
       html += `</div></div></div>`;
@@ -886,7 +935,7 @@ function renderTree(){
 /* ============================================================
    Render: canvas
    ============================================================ */
-function passes(conds){ if(!conds?.length) return true; return conds.every(c => { const src = allFields().find(x=>x.map===c.field); const v = src ? ui.answers[src.id] : undefined; const has = Array.isArray(v) ? v.length>0 : (v!=null && v!==''); if(c.op==='equals') return Array.isArray(v) ? v.includes(c.value) : v===c.value; if(c.op==='not_equals') return Array.isArray(v) ? !v.includes(c.value) : v!==c.value; if(c.op==='answered') return has; if(c.op==='empty') return !has; return true; }); }
+function passes(conds, answers=ui.answers){ if(!conds?.length) return true; return conds.every(c => { const src = allFields().find(x=>x.map===c.field); const v = src ? answers[src.id] : undefined; const has = Array.isArray(v) ? v.length>0 : (v!=null && v!==''); if(c.op==='equals') return Array.isArray(v) ? v.includes(c.value) : v===c.value; if(c.op==='not_equals') return Array.isArray(v) ? !v.includes(c.value) : v!==c.value; if(c.op==='answered') return has; if(c.op==='empty') return !has; return true; }); }
 /* A screen whose every field is hidden is skipped, as a borrower would never see it; a screen with no fields at all still shows. */
 function testScreens(){ return allScreens().filter(s => passes(s.conditions) && (!s.fields.length || s.fields.some(f => passes(f.conditions)))); }
 function appStyle(t){ const a = t?.appearance||{}; const st = t?.styleRef ? state.styles.find(s=>s.id===t.styleRef)?.appearance||{} : {}; const m = {...st, ...a}; const css=[]; if(m.font && m.font!=='inherit') css.push(`font-family:${FONTS[m.font]?.css||'inherit'}`); if(m.weight&&m.weight!=='inherit') css.push(`font-weight:${m.weight}`); if(m.size) css.push(`font-size:${m.size}px`); if(m.align&&m.align!=='inherit') css.push(`text-align:${m.align}`); if(m.cText) css.push(`color:${m.cText}`); if(m.radius) css.push(`--field-radius:${m.radius}px`); return css.join(';'); }
@@ -948,7 +997,7 @@ function renderCanvas(o={}){
 function fieldWrap(f){
   const s = ui.mode==='edit' && sel.kind==='field' && sel.id===f.id; const err = ui.errors[f.id]; const ed = s ? 'contenteditable="true" spellcheck="false"' : '';
   return `<div class="fw ${s?'sel':''} ${s&&ui.selAnim===f.id?'sel-in':''} ${err?'err':''}" data-fid="${f.id}" tabindex="${ui.mode==='edit'?0:-1}" style="${appStyle(f)}">
-    <div class="hd"><span class="tag">${TYPES[f.type].label}${f.conditions?.length?' · conditional':''}</span><div class="fx"><button data-act="up" data-tip="Move up" aria-label="Move up">${icon('i-arrow-up')}</button><button data-act="dup" data-tip="Duplicate" aria-label="Duplicate">${icon('i-copy')}</button><button class="del" data-act="del" data-tip="Delete" aria-label="Delete">${icon('i-trash')}</button></div></div>
+    <div class="hd"><span class="tag">${TYPES[f.type].label}${f.conditions?.length?' · conditional':''}${ui.iss?.byId[f.id]?`<i class="dot ${ui.iss.byId[f.id]}"></i>`:''}</span><div class="fx"><button data-act="up" data-tip="Move up" aria-label="Move up">${icon('i-arrow-up')}</button><button data-act="dup" data-tip="Duplicate" aria-label="Duplicate">${icon('i-copy')}</button><button class="del" data-act="del" data-tip="Delete" aria-label="Delete">${icon('i-trash')}</button></div></div>
     <div class="fl"><span class="ce" data-edit="label" data-ph="Question" ${ed}>${esc(f.label)}</span>${f.required?'':'<span class="optl">Optional</span>'}</div>
     ${f.description||s?`<div class="fd ce" data-edit="description" data-ph="Add help text" ${ed}>${esc(f.description)}</div>`:''}
     ${preview(f)}
@@ -977,10 +1026,12 @@ function renderInspector(){
   el.innerHTML = r.field ? renderField(r) : r.screen ? renderScreen(r) : renderSection(r);
   $$('textarea.ctl', el).forEach(t => t.classList.toggle('has', !!t.value));
 }
+/* A rule may only depend on an answer given earlier; a source that is already later (from an import) stays listed so the rule can be read and fixed. */
+function earlierSources(owner){ const screens = allScreens(); const isScreen = !!owner.fields; const out = []; for(const scr of screens){ if(isScreen && scr.id===owner.id) break; for(const f of scr.fields){ if(f.id===owner.id) return out; if(f.map) out.push(f); } } return out; }
 function condHtml(list, owner){
-  const srcs = allFields().filter(x=>x.map && x.id!==owner.id);
-  const valueFor = c => { const src = srcs.find(x=>x.map===c.field); const o = src ? (src.type==='yesno' ? [['yes','Yes'],['no','No']] : HAS_OPTS(src.type) ? fieldOptions(src).map(x=>[x.value,x.label]) : null) : null; return o ? selectHtml('c.value', c.value, [['','—'],...o], `data-ci="${c._i}"`) : input('c.value', c.value||'', 'value', `data-ci="${c._i}"`); };
-  return `${list.length ? list.map((c,i)=>{ c._i=i; return `<div class="cond"><div class="cl"><span class="w">Show if</span>${selectHtml('c.field', c.field, srcs.map(x=>[x.map, x.label]), `data-ci="${i}"`)}</div><div class="cl"><span class="w"></span>${selectHtml('c.op', c.op, [['equals','is'],['not_equals','is not'],['answered','is answered'],['empty','is empty']], `data-ci="${i}"`)}</div>${['equals','not_equals'].includes(c.op)?`<div class="cl"><span class="w"></span>${valueFor(c)}</div>`:''}<div class="ft"><button data-act="rmcond" data-ci="${i}">Remove</button></div></div>`; }).join('') : `<div class="empty"><b>Always shown</b>Add a rule to show this only after a matching answer.</div>`}<button class="add-row" data-act="addcond" ${srcs.length?'':'disabled'}>${icon('i-plus')}Add rule</button>`;
+  const srcs = earlierSources(owner);
+  const valueFor = c => { const src = allFields().find(x=>x.map===c.field); const o = src ? (src.type==='yesno' ? [['yes','Yes'],['no','No']] : HAS_OPTS(src.type) ? fieldOptions(src).map(x=>[x.value,x.label]) : null) : null; return o ? selectHtml('c.value', c.value, [['','—'],...o], `data-ci="${c._i}"`) : input('c.value', c.value||'', 'value', `data-ci="${c._i}"`); };
+  return `${list.length ? list.map((c,i)=>{ c._i=i; const items = srcs.map(x=>[x.map, x.label]); if(c.field && !srcs.some(x=>x.map===c.field)) items.unshift([c.field, `${mapLabel(c.field)} (asked later)`]); return `<div class="cond"><div class="cl"><span class="w">Show if</span>${selectHtml('c.field', c.field, items, `data-ci="${i}"`)}</div><div class="cl"><span class="w"></span>${selectHtml('c.op', c.op, [['equals','is'],['not_equals','is not'],['answered','is answered'],['empty','is empty']], `data-ci="${i}"`)}</div>${['equals','not_equals'].includes(c.op)?`<div class="cl"><span class="w"></span>${valueFor(c)}</div>`:''}<div class="ft"><button data-act="rmcond" data-ci="${i}">Remove</button></div></div>`; }).join('') : `<div class="empty"><b>Always shown</b>Add a rule to show this only after a matching answer.</div>`}<button class="add-row" data-act="addcond" ${srcs.length?'':'disabled'}>${icon('i-plus')}Add rule</button>`;
 }
 function appearanceHtml(t){
   const a = t.appearance||{};
@@ -1004,8 +1055,10 @@ function renderField({section, screen, field:f}){
     ${custom ? `<div class="opts" id="optList">${f.options.map(o=>`<div class="opt" data-oid="${o.id}" draggable="true"><span class="grip">${icon('i-grip')}</span><input class="ctl" data-opt="label" value="${esc(o.label)}" aria-label="Option label" placeholder="Label"><button class="rm" data-act="rmopt" aria-label="Remove">${icon('i-x')}</button><label class="val" data-tip="Stored value" data-tip-pos="bottom">${icon('i-code')}<input data-opt="value" value="${esc(o.value)}" aria-label="Stored value" spellcheck="false"></label></div>`).join('')}</div>
       <button class="add-row" data-act="addopt">${icon('i-plus')}Add option</button>
       ${f.type!=='multi'?`<div class="f"><label>Preselected</label>${selectHtml('default', f.default||'', [['','None'],...f.options.map(o=>[o.value,o.label])])}</div>`:''}`
-    : `<div class="note">${icon('i-info')}<span>${list.length} options, kept current automatically.</span></div>`}`;
-  const data = `<div class="f"><label>Saved as</label>${f.map ? `<div class="map"><span class="mi">${icon('i-link')}</span><span class="mt"><b>${esc(f.map)}</b><span>Loan file field</span></span><button data-act="clearmap" data-tip="Unlink" data-tip-pos="left">${icon('i-x')}</button></div>` : `<div class="ctl-ico"><input class="ctl" data-bind="map" placeholder="Search loan data…" list="mapList" autocomplete="off">${icon('i-search')}</div><div class="note">${icon('i-warn')}<span>Not saved to the loan file yet.</span></div>`}<datalist id="mapList">${MAPPINGS.map(m=>`<option value="${m}">`).join('')}</datalist></div>
+    : `<div class="note">${icon('i-info')}<span>${list.length} options, kept current automatically.</span></div>`}
+    ${custom && schemaOf(f.map)?.enum && !hasStdOptions(f, schemaOf(f.map)) ? `<button class="add-row" data-act="stdopts">${icon('i-reset')}Use the standard options for ${esc(mapTitle(f.map).toLowerCase())}</button>` : ''}`;
+  const sc = schemaOf(f.map);
+  const data = `<div class="f"><label>Saved as</label>${f.map ? `<div class="map"><span class="mi">${icon(isCustom(f.map)?'i-sparkle':'i-link')}</span><button class="mt" data-act="pickmap" data-tip="Change" data-tip-pos="bottom"><b>${esc(mapTitle(f.map))}</b><span>${esc(f.map)}${sc?.req?' · needed for every loan':''}${isCustom(f.map)?' · custom field':''}${!sc&&!isCustom(f.map)?' · not in the loan file':''}</span></button><button data-act="clearmap" data-tip="Unlink" data-tip-pos="left">${icon('i-x')}</button></div>` : `<button class="add-row" data-act="pickmap">${icon('i-link')}Choose loan data</button>`}</div>
     <div class="f"><label>Validation</label>${selectHtml('validation', f.validation, [['none','None'],['email','Email'],['phone','U.S. phone'],['zip','ZIP code'],['adult','18 or older'],['positive','Greater than zero']])}</div>
     ${sw('remember', f.remember!==false, 'Remember answer', 'Restores if the borrower returns')}`;
   const kind = `<div class="ictx"><span class="kind field">${icon(TYPES[f.type].icon)}${TYPES[f.type].label}</span><span class="nm">${esc(f.label)}</span><div class="acts"><button data-act="dup" data-tip="Duplicate  ⌘D" data-tip-pos="left">${icon('i-copy')}</button><button class="del" data-act="del" data-tip="Delete  ⌫" data-tip-pos="left">${icon('i-trash')}</button></div></div>`;
@@ -1045,14 +1098,76 @@ function renderStyle(){
     + sec('shape','Shape', `<div class="f"><span class="lb">Corner radius</span><div class="segi full" data-seg="style.radius"><button aria-pressed="${s.radius==='6'}" data-v="6">Sharp</button><button aria-pressed="${s.radius==='12'}" data-v="12">Soft</button><button aria-pressed="${s.radius==='20'}" data-v="20">Round</button></div></div>`)
     + sec('styles','Reusable styles', `${state.styles.length ? state.styles.map(st=>`<div class="stylecard">${icon('i-sparkle')}<b>${esc(st.name)}</b><span>${allFields().filter(f=>f.styleRef===st.id).length} uses</span><button class="btn sm icon ghost" data-act="rmstyle" data-id="${st.id}" data-tip="Delete" data-tip-pos="left">${icon('i-x')}</button></div>`).join('') : `<div class="empty"><b>None yet</b>Save a field’s appearance to reuse it.</div>`}<button class="add-row" data-act="newstyle">${icon('i-plus')}New style from selection</button>`, state.styles.length?`${state.styles.length}`:'');
 }
+function coverageHtml(){ const by = {}; allFields().forEach(f=>{ if(f.map) (by[f.map] ||= []).push(f); }); const collected = SCHEMA.filter(sc=>by[sc.path]).length; const missingReq = REQUIRED_PATHS.filter(p=>!by[p]).length;
+  const row = sc => { const fs = by[sc.path]||[]; const st = fs.length>1 ? 'block' : fs.length ? 'ok' : sc.req ? 'block' : 'chg'; const txt = fs.length>1 ? 'Collected twice' : fs.length ? `“${esc(fs[0].label)}”` : sc.req ? 'Missing · needed' : 'Not collected'; return `<li class="clk" data-cov="${sc.path}" ${fs.length?`data-go="field" data-id="${fs[fs.length-1].id}"`:''}><span class="ci ${st}">${icon(st==='ok'?'i-check':st==='block'?'i-x':'i-plus',12)}</span><b>${esc(sc.label)}<span class="sub2">${sc.path}</span></b><span>${txt}</span></li>`; };
+  const customs = allFields().filter(f=>isCustom(f.map)); const unknown = allFields().filter(f=>f.map && !schemaOf(f.map) && !isCustom(f.map));
+  return `<div class="note">${icon('i-info')}<span>${collected} of ${SCHEMA.length} loan-file fields collected${missingReq?`, ${missingReq} needed for every loan still missing`:''}.</span></div>
+    <ul class="checklist">${SCHEMA_GROUPS.map(g=>`<li class="lgrp">${g}</li>${SCHEMA.filter(sc=>sc.group===g).map(row).join('')}`).join('')}
+    ${customs.length?`<li class="lgrp">Custom fields</li>${customs.map(f=>`<li class="clk" data-go="field" data-id="${f.id}"><span class="ci chg">${icon('i-sparkle',12)}</span><b>${esc(mapTitle(f.map))}<span class="sub2">${esc(f.map)}</span></b><span>“${esc(f.label)}”</span></li>`).join('')}`:''}
+    ${unknown.length?`<li class="lgrp">Not in the loan file</li>${unknown.map(f=>`<li class="clk" data-go="field" data-id="${f.id}"><span class="ci warn">${icon('i-warn',12)}</span><b>${esc(f.map)}</b><span>“${esc(f.label)}”</span></li>`).join('')}`:''}</ul>`; }
 function renderCode(){
-  const fmt = ui.codeFmt; const payload = fmt==='form' ? exportForm() : fmt==='theme' ? {brand:state.brand, style:state.style, styles:state.styles} : {fields: allFields().filter(f=>f.map).map(f=>({path:f.map, type:f.type, required:f.required, label:f.label}))};
+  const fmt = ui.codeFmt; const payload = fmt==='form' ? exportForm() : {brand:state.brand, style:state.style, styles:state.styles};
   return `<div class="ictx"><span class="kind">${icon('i-code')}Code</span><span class="nm">Export &amp; import</span></div>
-    <div class="sec"><div class="sec-b" style="padding-top:12px"><div class="f"><label>Format</label>${selectHtml('codefmt', fmt, [['form','Form JSON'],['theme','Theme JSON'],['schema','Data schema']])}<span class="sub">${fmt==='form'?'Everything — sections, screens, fields, brand.':fmt==='theme'?'Brand, type and shape only.':'Read-only list of saved fields.'}</span></div>
-      <textarea class="ctl code" id="codeBox" spellcheck="false">${esc(JSON.stringify(payload,null,2))}</textarea>
-      <div class="btnrow"><button class="btn sm" data-act="copycode">${icon('i-copy')}Copy</button><button class="btn sm" data-act="dlcode">${icon('i-download')}Download</button>${fmt!=='schema'?`<button class="btn sm primary" data-act="applycode">${icon('i-upload')}Apply</button>`:''}</div></div></div>`;
+    <div class="sec"><div class="sec-b" style="padding-top:12px"><div class="f"><label>Format</label>${selectHtml('codefmt', fmt, [['form','Form JSON'],['theme','Theme JSON'],['schema','Data coverage']])}<span class="sub">${fmt==='form'?'Everything — sections, screens, fields, brand.':fmt==='theme'?'Brand, type and shape only.':'Which loan-file fields this form collects.'}</span></div>
+      ${fmt==='schema' ? coverageHtml() : `<textarea class="ctl code" id="codeBox" spellcheck="false">${esc(JSON.stringify(payload,null,2))}</textarea>
+      <div class="btnrow"><button class="btn sm" data-act="copycode">${icon('i-copy')}Copy</button><button class="btn sm" data-act="dlcode">${icon('i-download')}Download</button><button class="btn sm primary" data-act="applycode">${icon('i-upload')}Apply</button></div>`}</div></div>`;
 }
 function renderAll(){ renderTree(); renderCanvas(); renderInspector(); persist(); }
+
+/* ============================================================
+   Issues. Every check names the thing to fix and, where one exists, the fix itself.
+   Blockers stop publishing; warnings don't. Recomputed on every render.
+   ============================================================ */
+function rulesDependingOn(paths, excludeIds=[]){ const P = new Set(paths.filter(Boolean)); if(!P.size) return []; const out = []; for(const scr of allScreens()){ if(!excludeIds.includes(scr.id) && (scr.conditions||[]).some(c=>P.has(c.field))) out.push({o:scr, kind:'screen'}); for(const f of scr.fields) if(!excludeIds.includes(f.id) && (f.conditions||[]).some(c=>P.has(c.field))) out.push({o:f, kind:'field'}); } return out; }
+function lum(hex){ const h = hex.replace('#',''); const [r,g,b] = [0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)); return 0.2126*r+0.7152*g+0.0722*b; }
+function computeIssues(){
+  const fields = allFields(), screens = allScreens(); const issues = []; const by = {}; fields.forEach(f=>{ if(f.map) (by[f.map] ||= []).push(f); });
+  const order = new Map(); screens.forEach((s,si)=>{ order.set(s.id, si*1000); s.fields.forEach((f,fi)=>order.set(f.id, si*1000+fi+1)); });
+  const add = (sev, l, s, go, fix) => issues.push({sev, l, s, go, fix});
+  const gf = (f, focus) => ({kind:'field', id:f.id, focus}); const gs = x => ({kind:'screen', id:x.id});
+  if(!screens.length) add('block', 'The form has no screens', 'Add a section and a screen', null, {t:'addscreen'});
+  else if(!fields.length) add('block', 'The form has no questions', '', gs(screens[0]));
+  for(const p of REQUIRED_PATHS) if(!by[p]) add('block', `Doesn't collect ${schemaOf(p).label.toLowerCase()}`, 'Needed for every loan', null, {t:'add', path:p});
+  for(const f of fields){ const sc = schemaOf(f.map); const tl = TYPES[f.type].label.toLowerCase();
+    if(!f.label.trim() || f.label==='New question') add('block', 'A question has no label', f.map ? mapTitle(f.map) : tl, gf(f,'label'));
+    if(!f.map) add('warn', `“${f.label}” isn't saved anywhere`, 'Choose loan data or make it a custom field', gf(f), {t:'map', id:f.id});
+    else if(!sc && !isCustom(f.map)) add('warn', `“${f.label}” saves to an unknown path`, f.map, gf(f), {t:'map', id:f.id});
+    if(sc && !(COMPAT[sc.type]||[sc.type]).includes(f.type)) add('block', `“${f.label}” is ${an(tl)}, but ${sc.label.toLowerCase()} needs ${an(TYPES[sc.type].label.toLowerCase())}`, '', gf(f), {t:'type', id:f.id, type:sc.type});
+    if(HAS_OPTS(f.type) && !f.optsrc){
+      if(f.options.length<2 || f.options.some(o=>!o.label.trim())) add('block', `“${f.label}” needs two or more complete options`, '', gf(f));
+      if(new Set(f.options.map(o=>o.value)).size!==f.options.length) add('block', `“${f.label}” has duplicate option values`, '', gf(f));
+      if(sc?.enum){ const ok = new Set(sc.enum.map(e=>e[0])); const bad = f.options.filter(o=>!ok.has(o.value)); if(bad.length) add('block', `“${f.label}” has values ${sc.label.toLowerCase()} won't accept`, bad.map(o=>o.value).join(', '), gf(f), {t:'stdopts', id:f.id}); }
+    }
+    if(f.label.length>90) add('warn', `“${f.label.slice(0,40)}…” is a long label`, `${f.label.length} characters`, gf(f,'label'));
+  }
+  for(const a of Object.values(by).filter(a=>a.length>1)) add('block', `Two questions save to ${mapTitle(a[0].map).toLowerCase()}`, a.map(f=>f.label).join(' · '), gf(a[1]), {t:'map', id:a[1].id});
+  const owners = [...screens.map(o=>({o,kind:'screen'})), ...fields.map(o=>({o,kind:'field'}))];
+  for(const {o,kind} of owners) for(const c of o.conditions||[]){ const src = by[c.field]?.[0]; const name = kind==='field' ? o.label : o.title; const go = kind==='field' ? gf(o) : gs(o);
+    if(!src || src.id===o.id){ add('block', `A rule on “${name}” points at nothing`, c.field || 'No question chosen', go); continue; }
+    if(['equals','not_equals'].includes(c.op) && !c.value) add('block', `A rule on “${name}” has no value`, '', go);
+    else if(c.value && HAS_OPTS(src.type) && !fieldOptions(src).some(x=>x.value===c.value)) add('block', `A rule on “${name}” uses an option that no longer exists`, c.value, go);
+    const sp = order.get(src.id), op = kind==='screen' ? order.get(o.id)+1 : order.get(o.id); if(sp>=op) add('block', `A rule on “${name}” depends on a later answer`, `“${src.label}” is asked afterwards`, go);
+  }
+  for(const p of PERSONAS.filter(x=>x.k!=='blank')){ const A = {}; for(const [m,v] of Object.entries(p.a)){ const f = by[m]?.[0]; if(f) A[f.id]=v; } const seen = new Set(); for(const scr of screens){ if(!passes(scr.conditions, A)) continue; for(const f of scr.fields) if(f.map && passes(f.conditions, A)) seen.add(f.map); } for(const rp of REQUIRED_PATHS) if(by[rp] && !seen.has(rp)) add('block', `${schemaOf(rp).label} is hidden on the ${p.l.toLowerCase()} path`, 'A rule hides it for this borrower', gf(by[rp][0])); }
+  for(const scr of screens) if(!scr.fields.length) add('warn', `“${scr.title}” is an empty screen`, 'Borrowers see a blank step', gs(scr));
+  const brand = state.brand.color==='custom' ? state.brand.custom : BRAND[state.brand.color]||BRAND.ink; const bl = lum(brand), fl = contrast(brand)==='#ffffff' ? 1 : 0; const ratio = (Math.max(bl,fl)+.05)/(Math.min(bl,fl)+.05); if(ratio<4.5) add('warn', 'Brand color is hard to read on buttons', `${ratio.toFixed(1)}:1, needs 4.5:1`, null, {t:'brand'});
+  issues.sort((a,b)=>(a.sev==='block'?0:1)-(b.sev==='block'?0:1));
+  const byId = {}; for(const i of issues){ const k = i.go?.id; if(k && (!byId[k] || i.sev==='block')) byId[k] = i.sev; }
+  return { issues, byId, blockers: issues.filter(i=>i.sev==='block').length, warnings: issues.filter(i=>i.sev==='warn').length };
+}
+function syncIssues(){ const c = $('#pubCount'); c.hidden = !ui.iss.blockers; c.textContent = ui.iss.blockers; $('#publishBtn').dataset.tip = ui.iss.blockers ? `${ui.iss.blockers} to fix before publishing` : ''; }
+const an = w => (/^[aeiou]/.test(w) ? 'an ' : 'a ') + w;
+function fixLabel(x){ return {add:'Add', map:'Choose', type:`Make it ${an(TYPES[x.type]?.label.toLowerCase())}`, stdopts:'Use standard options', addscreen:'Add screen', brand:'Open brand'}[x.t]; }
+function addFromSchema(path){ const sc = schemaOf(path); const screen = currentScreen() || allScreens().slice(-1)[0]; if(!sc || !screen) return; commit(()=>{ const f = fieldFromSchema(sc); screen.open = true; screen.fields.push(f); sel = {kind:'field', id:f.id}; }); toast(`Added “${sc.label}”`, 'ok'); }
+function applyFix(x){ const f = x.id ? find({kind:'field', id:x.id})?.field : null;
+  if(x.t==='add') return addFromSchema(x.path);
+  if(x.t==='addscreen') return addScreen();
+  if(x.t==='brand'){ ui.tab='brand'; renderInspector(); return; }
+  if(!f) return;
+  if(x.t==='map'){ select({kind:'field', id:f.id}); openMapPicker(f); }
+  if(x.t==='type'){ const sc = schemaOf(f.map); commit(()=>{ f.type = x.type; if(sc?.enum && HAS_OPTS(f.type)) f.options = stdOptions(sc); }); select({kind:'field', id:f.id}); }
+  if(x.t==='stdopts'){ const sc = schemaOf(f.map); commit(()=>{ f.options = stdOptions(sc); }); select({kind:'field', id:f.id}); }
+}
 
 /* ============================================================
    Interactions: selection, tree
@@ -1060,7 +1175,7 @@ function renderAll(){ renderTree(); renderCanvas(); renderInspector(); persist()
 const narrow = ()=>innerWidth<=900;
 const layout = ()=> innerWidth<=900 ? 'phone' : innerWidth<=1180 ? 'tablet' : 'desk';
 const overlayRight = ()=> layout()!=='desk';
-function select(ref, o={}){ sel = ref; if(narrow()){ $('#app').dataset.left='closed'; if(o.inspect) $('#app').dataset.right='open'; else if(!o.keepRight) $('#app').dataset.right='closed'; } else if(o.inspect && layout()==='tablet') $('#app').dataset.right='open'; if(ui.mode==='test') setMode('edit', {silent:true}); const r = find(ref); if(r?.section && ref.kind!=='section') r.section.open = true; if(r?.screen && ref.kind==='field') r.screen.open = true; ui.tab='form'; ui._noScroll = !!o.noScroll; ui.selAnim = ref.id; renderAll(); ui._noScroll=false; ui.selAnim = null; const ins = $('#insp'); ins.classList.remove('fade'); void ins.offsetWidth; ins.classList.add('fade'); if(o.focus) setTimeout(()=>{ const el = $(`#insp [data-bind="${o.focus}"]`); el?.focus(); el?.select?.(); }, 40); }
+function select(ref, o={}){ sel = ref; if(narrow()){ $('#app').dataset.left='closed'; if(o.inspect) $('#app').dataset.right='open'; else if(!o.keepRight) $('#app').dataset.right='closed'; } else if(o.inspect && layout()==='tablet') $('#app').dataset.right='open'; if(ui.mode==='test') setMode('edit', {silent:true}); const r = find(ref); if(r?.section && ref.kind!=='section') r.section.open = true; if(r?.screen && ref.kind==='field') r.screen.open = true; ui.tab='form'; ui._noScroll = !!o.noScroll; ui.selAnim = ref.id; renderAll(); ui._noScroll=false; ui.selAnim = null; const ins = $('#insp'); ins.classList.remove('fade'); void ins.offsetWidth; ins.classList.add('fade'); if(o.focus) setTimeout(()=>{ if(o.focus==='map'){ const f = find(sel)?.field; if(f) openMapPicker(f); return; } const el = $(`#insp [data-bind="${o.focus}"]`); el?.focus(); el?.select?.(); }, 40); }
 document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if(g && !e.target.closest('.ctxmenu')){ select({kind:g.dataset.go, id:g.dataset.id}); } });
 
 const tree = $('#tree');
@@ -1113,10 +1228,14 @@ tree.addEventListener('drop', e => {
 });
 
 function moveRef(ref, dir){ const list = parentList(ref); const i = list.findIndex(x=>x.id===ref.id); const j = i+dir; if(j<0||j>=list.length){ toast(dir<0?'Already first':'Already last'); return; } commit(()=>{ [list[i],list[j]]=[list[j],list[i]]; }); }
-function deleteRef(ref){
+function deleteRef(ref, o={}){
   const r = find(ref); if(!r) return; const name = r.field?.label || r.screen?.title || r.section?.title; const list = parentList(ref);
   if(ref.kind==='section' && state.sections.length===1) return toast('Keep at least one section','warn');
-  commit(()=>{ const i = list.findIndex(x=>x.id===ref.id); list.splice(i,1); if(sel.id===ref.id || !find(sel)){ const next = list[Math.min(i, list.length-1)]; if(next) sel = {kind:ref.kind, id:next.id}; else if(ref.kind==='field') sel = {kind:'screen', id:r.screen.id}; else if(ref.kind==='screen') sel = {kind:'section', id:r.section.id}; else sel = {kind:'section', id:state.sections[0].id}; } });
+  const gone = ref.kind==='field' ? [r.field] : ref.kind==='screen' ? r.screen.fields : r.section.screens.flatMap(x=>x.fields); const goneIds = new Set(gone.map(f=>f.id));
+  const paths = gone.map(f=>f.map).filter(m=>m && !allFields().some(x=>x.map===m && !goneIds.has(x.id)));
+  const deps = rulesDependingOn(paths, [...goneIds, ref.id]);
+  if(deps.length && !o.withRules) return confirm2(`Delete “${name}”?`, `${deps.length===1?'A rule depends':deps.length+' rules depend'} on it and will be removed too: ${deps.map(d=>`“${d.kind==='field'?d.o.label:d.o.title}”`).join(', ')}.`, 'Delete both', ()=>deleteRef(ref, {withRules:true}), true);
+  commit(()=>{ const P = new Set(paths); for(const d of deps) d.o.conditions = d.o.conditions.filter(c=>!P.has(c.field)); const i = list.findIndex(x=>x.id===ref.id); list.splice(i,1); if(sel.id===ref.id || !find(sel)){ const next = list[Math.min(i, list.length-1)]; if(next) sel = {kind:ref.kind, id:next.id}; else if(ref.kind==='field') sel = {kind:'screen', id:r.screen.id}; else if(ref.kind==='screen') sel = {kind:'section', id:r.section.id}; else sel = {kind:'section', id:state.sections[0].id}; } });
   toast(`Deleted “${name}”`, 'ok', {label:'Undo', fn:undo});
 }
 function duplicateRef(ref){ const r = find(ref); if(!r || ref.kind==='section') return toast('Sections can’t be duplicated'); commit(()=>{ const list = parentList(ref); const i = list.findIndex(x=>x.id===ref.id); const copy = clone(list[i]); reId(copy); copy[ref.kind==='field'?'label':'title'] += ' copy'; list.splice(i+1,0,copy); sel = {kind:ref.kind, id:copy.id}; }); toast('Duplicated'); }
@@ -1176,7 +1295,7 @@ screenEl.addEventListener('click', e => {
 /* In-place edits mirror into the inspector while typing and commit on blur; Escape restores the stored value. */
 function focusEdit(fid, key, oid){ const n = $(`.fw[data-fid="${fid}"] [data-edit="${key}"]${oid?`[data-oid="${oid}"]`:''}`, screenEl); if(!n) return; n.focus(); const r = document.createRange(); r.selectNodeContents(n); r.collapse(false); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(r); }
 function editTarget(el){ const f = find({kind:'field', id:el.closest('.fw')?.dataset.fid})?.field; if(!f) return null; const k = el.dataset.edit; const o = k==='opt' ? f.options.find(x=>x.id===el.dataset.oid) : null; if(k==='opt' && !o) return null; return {f, k, o, stored: k==='label' ? f.label : k==='description' ? (f.description||'') : o.label}; }
-function commitEdit(el){ const t = editTarget(el); if(!t) return; const v = el.textContent.trim(); if(v===t.stored) return; if(!v && t.k!=='description'){ el.textContent = t.stored; return; } commit(()=>{ if(t.k==='label') t.f.label = v; else if(t.k==='description') t.f.description = v; else { t.o.label = v; if(!t.o.manual) t.o.value = slug(v); } }); }
+function commitEdit(el){ const t = editTarget(el); if(!t) return; const v = el.textContent.trim(); if(v===t.stored) return; if(!v && t.k!=='description'){ el.textContent = t.stored; return; } commit(()=>{ if(t.k==='label') t.f.label = v; else if(t.k==='description') t.f.description = v; else { t.o.label = v; if(!t.o.manual) t.o.value = uniqueValue(t.f, slug(v), t.o.id); } }); }
 function mirrorEdit(el){ const t = editTarget(el); if(!t) return; const v = el.textContent; const box = t.k==='opt' ? $(`#optList .opt[data-oid="${t.o.id}"] [data-opt=label]`) : $(`#insp [data-bind="${t.k}"]`); if(box) box.value = v; }
 screenEl.addEventListener('paste', e => { if(!e.target.isContentEditable) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData.getData('text/plain')||'').replace(/\s*\n\s*/g,' ')); });
 screenEl.addEventListener('input', e => { if(ui.mode==='edit'){ const ce = e.target.closest?.('[data-edit]'); if(ce) mirrorEdit(ce); return; } const inp = e.target.closest('[data-fid]'); if(inp){ ui.answers[inp.dataset.fid]=inp.value; if(ui.errors[inp.dataset.fid]){ delete ui.errors[inp.dataset.fid]; inp.closest('.fw')?.classList.remove('err'); inp.closest('.fw')?.querySelector('.ferr')?.remove(); } } });
@@ -1228,15 +1347,18 @@ $('#tabs').addEventListener('click', e => { const b = e.target.closest('[role=ta
 $('#tabs').addEventListener('keydown', e => { const t = ['form','brand','style','code']; const i = t.indexOf(ui.tab); if(e.key==='ArrowRight'){ ui.tab=t[(i+1)%4]; renderInspector(); $(`#tabs [data-tab="${ui.tab}"]`).focus(); } if(e.key==='ArrowLeft'){ ui.tab=t[(i+3)%4]; renderInspector(); $(`#tabs [data-tab="${ui.tab}"]`).focus(); } });
 insp.addEventListener('click', e => {
   if(narrow() && e.target.closest('.ictx .kind')){ $('#app').dataset.right='closed'; return; }
+  const cov = e.target.closest('li[data-cov]:not([data-go])'); if(cov){ addFromSchema(cov.dataset.cov); return; }
   const seg = e.target.closest('[data-seg] button'); if(seg){ bind(seg.parentElement.dataset.seg, seg.dataset.v); return; }
   const act = e.target.closest('[data-act]'); if(!act) return; const a = act.dataset.act; const r = find(sel); const t = r?.field || r?.screen || r?.section;
   if(a==='sec'){ const s = act.closest('.sec'); const k = s.dataset.sec; secOpen[k] = s.dataset.open!=='true'; s.dataset.open = secOpen[k]; act.setAttribute('aria-expanded', secOpen[k]); return; }
   if(a==='del') return deleteRef(sel); if(a==='dup') return duplicateRef(sel);
   if(a==='addopt'){ commit(()=>{ r.field.options.push({id:id('o'), label:'', value:''}); }); const last = $$('#optList [data-opt=label]').pop(); last?.focus(); return; }
-  if(a==='rmopt'){ const oid = act.closest('.opt').dataset.oid; commit(()=>{ r.field.options = r.field.options.filter(o=>o.id!==oid); }); return; }
-  if(a==='addcond'){ const first = allFields().find(x=>x.map && x.id!==t.id); commit(()=>{ (t.conditions ||= []).push({field:first?.map||'', op:'equals', value:''}); }); secOpen.conditions=true; renderInspector(); return; }
+  if(a==='rmopt'){ const oid = act.closest('.opt').dataset.oid; const opt = r.field.options.find(o=>o.id===oid); const deps = rulesDependingOn([r.field.map], [r.field.id]).filter(d=>d.o.conditions.some(c=>c.field===r.field.map && c.value===opt?.value)); const go = ()=>commit(()=>{ for(const d of deps) d.o.conditions = d.o.conditions.filter(c=>!(c.field===r.field.map && c.value===opt.value)); r.field.options = r.field.options.filter(o=>o.id!==oid); }); if(deps.length) confirm2(`Remove “${opt.label}”?`, `${deps.length===1?'A rule depends':deps.length+' rules depend'} on this option and will be removed too: ${deps.map(d=>`“${d.kind==='field'?d.o.label:d.o.title}”`).join(', ')}.`, 'Remove both', go, true); else go(); return; }
+  if(a==='addcond'){ const first = earlierSources(t)[0]; commit(()=>{ (t.conditions ||= []).push({field:first?.map||'', op:'equals', value:''}); }); secOpen.conditions=true; renderInspector(); return; }
   if(a==='rmcond'){ const i = +act.dataset.ci; commit(()=>{ t.conditions.splice(i,1); }); return; }
-  if(a==='clearmap'){ commit(()=>{ r.field.map=''; }); setTimeout(()=>$('#insp [data-bind=map]')?.focus(),30); return; }
+  if(a==='clearmap'){ commit(()=>{ r.field.map=''; }); return; }
+  if(a==='pickmap'){ openMapPicker(r.field); return; }
+  if(a==='stdopts'){ commit(()=>{ r.field.options = stdOptions(schemaOf(r.field.map)); }); return; }
   if(a==='clearcolor'){ commit(()=>{ delete t.appearance.cText; }); return; }
   if(a==='resetapp'){ commit(()=>{ delete t.appearance; delete t.styleRef; }); toast('Appearance reset'); return; }
   if(a==='addfield') return openTypePicker(r.screen?.id || r.section?.screens[0]?.id);
@@ -1263,10 +1385,9 @@ insp.addEventListener('input', e => { const t = e.target;
   if(t.tagName==='TEXTAREA') t.classList.toggle('has', !!t.value);
   if(t.type==='color' && t.dataset.bind){ liveBind(t.dataset.bind, t.value, t); return; }
   if(t.dataset.bind && t.type!=='checkbox' && t.tagName!=='SELECT') liveBind(t.dataset.bind, t.value, t);
-  if(t.dataset.opt){ const r = find(sel); const o = r.field.options.find(x=>x.id===t.closest('.opt').dataset.oid); if(!o) return; if(!optSnap){ snapshot(); optSnap=true; } if(t.dataset.opt==='label'){ o.label=t.value; if(!o.manual){ o.value=slug(t.value); t.closest('.opt').querySelector('[data-opt=value]').value=o.value; } } else { o.value=t.value; o.manual=true; } markDirty(); renderCanvas(); persist(); }
+  if(t.dataset.opt){ const r = find(sel); const o = r.field.options.find(x=>x.id===t.closest('.opt').dataset.oid); if(!o) return; if(!optSnap){ snapshot(); optSnap=true; } if(t.dataset.opt==='label'){ o.label=t.value; if(!o.manual){ o.value=uniqueValue(r.field, slug(t.value), o.id); t.closest('.opt').querySelector('[data-opt=value]').value=o.value; } } else { o.value=t.value; o.manual=true; } markDirty(); renderCanvas(); persist(); }
 });
-insp.addEventListener('keydown', e => { if(e.key==='Enter' && e.target.dataset.opt==='label'){ e.preventDefault(); $('[data-act=addopt]')?.click(); } if(e.key==='Backspace' && e.target.dataset.opt==='label' && !e.target.value){ e.preventDefault(); const opt = e.target.closest('.opt'); const prev = opt.previousElementSibling?.querySelector('[data-opt=label]'); opt.querySelector('[data-act=rmopt]').click(); prev?.focus(); } if(e.key==='Enter' && e.target.dataset.bind==='map'){ e.target.blur(); } });
-insp.addEventListener('blur', e => { if(e.target.dataset?.bind==='map' && e.target.value){ bind('map', e.target.value.trim()); } }, true);
+insp.addEventListener('keydown', e => { if(e.key==='Enter' && e.target.dataset.opt==='label'){ e.preventDefault(); $('[data-act=addopt]')?.click(); } if(e.key==='Backspace' && e.target.dataset.opt==='label' && !e.target.value){ e.preventDefault(); const opt = e.target.closest('.opt'); const prev = opt.previousElementSibling?.querySelector('[data-opt=label]'); opt.querySelector('[data-act=rmopt]').click(); prev?.focus(); } });
 /* option drag reorder */
 let optDrag=null;
 insp.addEventListener('dragstart', e => { const o = e.target.closest('.opt'); if(!o) return; optDrag=o.dataset.oid; o.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
@@ -1298,12 +1419,37 @@ function download(name, text){ const blob = new Blob([text],{type:'application/j
    ============================================================ */
 function addSection(){ commit(()=>{ const s = SEC('New section', [], {open:true}); state.sections.push(s); sel={kind:'section',id:s.id}; }); setTimeout(()=>{ const el=$('#insp [data-bind=title]'); el?.focus(); el?.select(); },40); }
 function addScreen(secId){ const section = secId ? find({kind:'section',id:secId}).section : (find(sel)?.section || state.sections[0]); if(!section) return addSection(); commit(()=>{ const s = S('New screen', []); section.open=true; section.screens.push(s); sel={kind:'screen',id:s.id}; }); setTimeout(()=>{ const el=$('#insp [data-bind=title]'); el?.focus(); el?.select(); },40); }
+/* Rows for the schema lists: a field type icon, the label over its path, and the state of that path in this form. */
+function schemaRows(opts={}){ const by = {}; allFields().forEach(f=>{ if(f.map) (by[f.map] ||= []).push(f); });
+  const row = sc => { const u = (by[sc.path]||[]).find(f=>f.id!==opts.selfId); const dis = u && !opts.allowUsed; return `<li class="${dis?'':'clk'}" data-path="${sc.path}" data-q="${esc((sc.label+' '+sc.path+' '+sc.group).toLowerCase())}" ${dis?'aria-disabled="true"':''} ${u?`data-used="${u.id}"`:''}><span class="ico" style="color:var(--t3)">${icon(TYPES[sc.type]?.icon||'i-text')}</span><b>${esc(sc.label)}<span class="sub2">${sc.path}</span></b><span>${u?`Collected by “${esc(u.label)}”`:sc.req?'Needed for every loan':TYPES[sc.type]?.label||''}</span></li>`; };
+  const needed = SCHEMA.filter(sc=>sc.req && !by[sc.path]);
+  return `${needed.length && opts.needed ? `<li class="lgrp">Needed for every loan</li>${needed.map(row).join('')}` : ''}${SCHEMA_GROUPS.map(g=>`<li class="lgrp">${g}</li>${SCHEMA.filter(sc=>sc.group===g).map(row).join('')}`).join('')}`; }
+function filterSchemaList(list, q){ q = q.trim().toLowerCase(); $$('li[data-path]', list).forEach(li => li.hidden = !!q && !li.dataset.q.includes(q)); $$('li.lgrp', list).forEach(h => { let n = h.nextElementSibling, any = false; while(n && !n.classList.contains('lgrp')){ if(!n.hidden) any = true; n = n.nextElementSibling; } h.hidden = !any; }); }
+function openMapPicker(f){
+  modal(`<div class="mh"><h2>Save “${esc(f.label)}” as</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
+    <div class="mb" style="padding-top:12px"><div class="search" style="margin:0"><svg width="14" height="14"><use href="#i-search"/></svg><input id="mapQ" placeholder="Search loan data" autocomplete="off"></div>
+      <ul class="checklist" id="mapList">${schemaRows({selfId:f.id, allowUsed:true})}</ul>
+      <div class="f"><label>Or keep it outside the loan file</label><div class="colorrow"><input class="ctl" id="customKey" placeholder="Custom field name" value="${isCustom(f.map)?esc(f.map.slice(7)):''}"><button class="btn" id="customOk" style="flex:none">Save as custom</button></div></div></div>`,
+    m => { const q = $('#mapQ', m); q.oninput = ()=>filterSchemaList($('#mapList', m), q.value); q.onkeydown = e=>{ if(e.key==='Enter') $('#mapList li.clk:not([hidden])', m)?.click(); };
+      const apply = (path, other) => { closeModal(); commit(()=>{ if(other) other.map=''; setMap(f, path); }); toast(other ? `Moved from “${other.label}”` : `Saved as ${mapTitle(path)}`, 'ok'); };
+      m.addEventListener('click', e => { const li = e.target.closest('li[data-path]'); if(!li) return; const path = li.dataset.path; const other = li.dataset.used ? find({kind:'field', id:li.dataset.used})?.field : null; if(other){ closeModal(); setTimeout(()=>confirm2(`“${other.label}” already saves here`, `Only one question can save to ${mapTitle(path).toLowerCase()}. Move it to “${f.label}” instead?`, 'Move here', ()=>apply(path, other)), 160); } else apply(path); });
+      const custom = ()=>{ const k = slug($('#customKey', m).value); if(!k) return $('#customKey', m).focus(); apply('custom.'+k); }; $('#customOk', m).onclick = custom; $('#customKey', m).onkeydown = e=>{ if(e.key==='Enter') custom(); }; q.focus(); });
+}
 function openTypePicker(screenId){
   const screen = screenId ? find({kind:'screen',id:screenId})?.screen : currentScreen(); if(!screen) return toast('Add a screen first','warn');
+  const pane = ui.addPane || 'data';
   modal(`<div class="mh"><h2>Add to “${esc(screen.title)}”</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
-    <div class="mb"><div class="search" style="margin:0"><svg width="14" height="14"><use href="#i-search"/></svg><input id="typeQ" placeholder="Filter types" autocomplete="off"></div><div class="typegrid" id="typeGrid">${Object.entries(TYPES).map(([k,v])=>`<button class="typecard" data-type="${k}"><span class="ico">${icon(v.icon,16)}</span><b>${v.label}</b><span>${v.desc}</span></button>`).join('')}</div></div>`,
-    m => { const q = $('#typeQ', m); q.oninput = ()=>{ $$('.typecard', m).forEach(c => c.hidden = !c.textContent.toLowerCase().includes(q.value.toLowerCase())); }; q.onkeydown = e=>{ if(e.key==='Enter'){ $('.typecard:not([hidden])', m)?.click(); } };
-      m.addEventListener('click', e => { const t = e.target.closest('[data-type]'); if(!t) return; closeModal(); commit(()=>{ const f = F('New question', t.dataset.type); if(HAS_OPTS(f.type)) f.options = opts('Option 1','Option 2'); screen.open=true; screen.fields.push(f); sel={kind:'field',id:f.id}; }); if(narrow()) $('#app').dataset.left='closed'; if(overlayRight()) $('#app').dataset.right='open'; setTimeout(()=>{ const el=$('#insp [data-bind=label]'); el?.focus(); el?.select(); },40); }); q.focus(); });
+    <div class="mb"><div class="segi full" id="addTabs"><button aria-pressed="${pane==='data'}" data-pane="data">Loan data</button><button aria-pressed="${pane==='type'}" data-pane="type">Question type</button></div>
+      <div class="search" style="margin:0"><svg width="14" height="14"><use href="#i-search"/></svg><input id="typeQ" placeholder="${pane==='data'?'Search loan data':'Filter types'}" autocomplete="off"></div>
+      <ul class="checklist" id="schemaList" ${pane==='data'?'':'hidden'}>${schemaRows({needed:true})}</ul>
+      <div class="typegrid" id="typeGrid" ${pane==='type'?'':'hidden'}>${Object.entries(TYPES).map(([k,v])=>`<button class="typecard" data-type="${k}"><span class="ico">${icon(v.icon,16)}</span><b>${v.label}</b><span>${v.desc}</span></button>`).join('')}</div></div>`,
+    m => { const q = $('#typeQ', m); const filter = ()=>{ $$('.typecard', m).forEach(c => c.hidden = !c.textContent.toLowerCase().includes(q.value.toLowerCase())); filterSchemaList($('#schemaList', m), q.value); }; q.oninput = filter;
+      q.onkeydown = e=>{ if(e.key==='Enter'){ (ui.addPane==='type' ? $('.typecard:not([hidden])', m) : $('#schemaList li.clk:not([hidden])', m))?.click(); } };
+      const place = f => { closeModal(); commit(()=>{ screen.open=true; screen.fields.push(f); sel={kind:'field',id:f.id}; }); if(narrow()) $('#app').dataset.left='closed'; if(overlayRight()) $('#app').dataset.right='open'; setTimeout(()=>{ const el=$('#insp [data-bind=label]'); el?.focus(); el?.select(); },40); };
+      m.addEventListener('click', e => { const tab = e.target.closest('[data-pane]'); if(tab){ ui.addPane = tab.dataset.pane; $$('[data-pane]', m).forEach(b=>b.setAttribute('aria-pressed', b===tab)); $('#schemaList', m).hidden = ui.addPane!=='data'; $('#typeGrid', m).hidden = ui.addPane!=='type'; q.placeholder = ui.addPane==='data' ? 'Search loan data' : 'Filter types'; q.focus(); return; }
+        const t = e.target.closest('[data-type]'); if(t){ const f = F('New question', t.dataset.type); if(HAS_OPTS(f.type)) f.options = opts('Option 1','Option 2'); return place(f); }
+        const li = e.target.closest('li.clk[data-path]'); if(li) place(fieldFromSchema(schemaOf(li.dataset.path))); });
+      ui.addPane = pane; q.focus(); });
 }
 $('#addBtn').onclick = e => showMenu([{l:'Field', i:'i-form', fn:()=>openTypePicker()}, {l:'Screen', i:'i-screen', fn:()=>addScreen()}, {l:'Section', i:'i-section', fn:()=>addSection()}], e.currentTarget);
 $('#nameBtn').onclick = ()=>prompt2('Form name', state.name, v => { commit(()=>{ state.name=v; }); $('#formName').textContent=v; }, state.name);
@@ -1326,7 +1472,7 @@ function toast(text, kind='', action, o={}){ const t = document.createElement('d
 function openPalette(){
   const cmds = [
     {g:'Create', l:'Add field', i:'i-plus', fn:()=>openTypePicker()}, {g:'Create', l:'Add screen', i:'i-screen', fn:()=>addScreen()}, {g:'Create', l:'Add section', i:'i-section', fn:addSection}, {g:'Create', l:'From question library', i:'i-library', fn:openLibrary}, {g:'Form', l:'Saved forms', i:'i-folder', fn:openForms}, {g:'Form', l:'New form', i:'i-file-plus', fn:newForm},
-    {g:'Form', l:'Save draft', i:'i-check', k:'⌘S', fn:saveDraft}, {g:'Form', l:'Review & publish', i:'i-send', fn:openPublish}, {g:'View', l:'Test as a persona', i:'i-person', fn:()=>{ setMode('test'); $('#dockPersona').click(); }}, {g:'Form', l:'Edit form JSON', i:'i-code', fn:openJson}, {g:'Form', l:'Rename form', i:'i-text', fn:()=>$('#nameBtn').click()}, {g:'Form', l:'Reset to sample form', i:'i-reset', fn:()=>confirm2('Reset form?','Replaces everything with the sample loan application. Undo is available.','Reset',()=>{ commit(()=>{ state=seed(); sel={kind:'field',id:state.sections[0].screens[0].fields[0].id}; }); applyBrand(); toast('Sample form restored'); }, true)},
+    {g:'Form', l:'Save draft', i:'i-check', k:'⌘S', fn:saveDraft}, {g:'Form', l:'Review & publish', i:'i-send', fn:openPublish}, {g:'Form', l:'Data coverage', i:'i-link', fn:()=>{ ui.tab='code'; ui.codeFmt='schema'; renderInspector(); }}, {g:'View', l:'Test as a persona', i:'i-person', fn:()=>{ setMode('test'); $('#dockPersona').click(); }}, {g:'Form', l:'Edit form JSON', i:'i-code', fn:openJson}, {g:'Form', l:'Rename form', i:'i-text', fn:()=>$('#nameBtn').click()}, {g:'Form', l:'Reset to sample form', i:'i-reset', fn:()=>confirm2('Reset form?','Replaces everything with the sample loan application. Undo is available.','Reset',()=>{ commit(()=>{ state=seed(); sel={kind:'field',id:state.sections[0].screens[0].fields[0].id}; }); applyBrand(); toast('Sample form restored'); }, true)},
     {g:'View', l:ui.mode==='edit'?'Test the form':'Back to editing', i:'i-eye', k:'P', fn:()=>setMode(ui.mode==='edit'?'test':'edit')}, {g:'View', l:'Phone preview', i:'i-mobile', k:'M', fn:()=>setDevice('mobile')}, {g:'View', l:'Desktop preview', i:'i-desktop', fn:()=>setDevice('desktop')}, {g:'View', l:'Toggle editor theme', i:'i-moon', fn:()=>$('#themeBtn').click()}, {g:'View', l:'Toggle structure panel', i:'i-sidebar', k:'⌘\\', fn:()=>togglePanel('left')}, {g:'View', l:'Toggle inspector', i:'i-sidebar-r', k:'⌘/', fn:()=>togglePanel('right')}, {g:'View', l:'Keyboard shortcuts', i:'i-keyboard', k:'?', fn:openShortcuts},
     {g:'Settings', l:'Brand', i:'i-brand', fn:()=>{ ui.tab='brand'; renderInspector(); }}, {g:'Settings', l:'Style', i:'i-style', fn:()=>{ ui.tab='style'; renderInspector(); }},
     ...allScreens().map(s=>({g:'Screens', l:s.title, i:'i-screen', fn:()=>select({kind:'screen',id:s.id})})),
@@ -1375,47 +1521,22 @@ function changesSinceLive(){
 }
 function lum(hex){ const h = hex.replace('#',''); const [r,g,b] = [0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)); return 0.2126*r+0.7152*g+0.0722*b; }
 /* Each check names its first offender so the row can jump straight to it. Rules may only depend on answers given earlier in the form. */
-function publishChecks(){
-  const fields = allFields(), screens = allScreens(); const order = new Map(); screens.forEach((s,si)=>{ order.set(s.id, si*1000); s.fields.forEach((f,fi)=>order.set(f.id, si*1000+fi+1)); });
-  const byMap = {}; fields.forEach(f=>{ if(f.map) (byMap[f.map] ||= []).push(f); });
-  const srcPos = m => { const f = byMap[m]?.[0]; return f ? order.get(f.id) : null; };
-  const blank = fields.filter(f=>!f.label.trim()||f.label==='New question');
-  const unmapped = fields.filter(f=>!f.map);
-  const shared = Object.values(byMap).filter(a=>a.length>1).map(a=>a[1]);
-  const emptyScreens = screens.filter(s=>!s.fields.length);
-  const badOpts = fields.filter(f=>HAS_OPTS(f.type) && !f.optsrc && (f.options.length<2 || f.options.some(o=>!o.label.trim())));
-  const dupVals = fields.filter(f=>HAS_OPTS(f.type) && !f.optsrc && new Set(f.options.map(o=>o.value)).size!==f.options.length);
-  const owners = [...screens.map(s=>({o:s, kind:'screen'})), ...fields.map(f=>({o:f, kind:'field'}))];
-  const brokenRule = owners.find(({o}) => (o.conditions||[]).some(c => !byMap[c.field] || byMap[c.field].every(x=>x.id===o.id) || (['equals','not_equals'].includes(c.op) && !c.value)));
-  const lateRule = owners.find(({o,kind}) => (o.conditions||[]).some(c => { const sp = srcPos(c.field); return sp!=null && sp >= (kind==='screen' ? order.get(o.id)+1 : order.get(o.id)); }));
-  const longLabel = fields.filter(f=>f.label.length>90);
-  const brand = state.brand.color==='custom' ? state.brand.custom : BRAND[state.brand.color]||BRAND.ink; const bl = lum(brand), fl = contrast(brand)==='#ffffff' ? 1 : 0; const ratio = (Math.max(bl,fl)+.05)/(Math.min(bl,fl)+.05);
-  const g = (x, focus) => x ? {kind: x.kind || 'field', id: (x.o||x).id, focus} : null;
-  return [
-    {ok:!blank.length, l:'Every field has a real label', s: blank.length?`${blank.length} to name`:'OK', go:g(blank[0],'label')},
-    {ok:!unmapped.length, l:'Every field is saved to the loan file', s: unmapped.length?`${unmapped.length} unsaved`:'OK', go:g(unmapped[0],'map')},
-    {ok:!shared.length, l:'Each loan-file field is saved by one question', s: shared.length?`${shared.length} shared`:'OK', go:g(shared[0],'map')},
-    {ok:!emptyScreens.length, l:'No empty screens', s: emptyScreens.length?`${emptyScreens.length} empty`:'OK', go: emptyScreens[0] ? {kind:'screen', id:emptyScreens[0].id} : null},
-    {ok:!badOpts.length, l:'Choice fields have 2+ complete options', s: badOpts.length?`${badOpts.length} to fix`:'OK', go:g(badOpts[0])},
-    {ok:!dupVals.length, l:'Option values are unique within a field', s: dupVals.length?`${dupVals.length} to fix`:'OK', go:g(dupVals[0])},
-    {ok:!brokenRule, l:'Every rule points at a live answer', s: brokenRule?'Broken rule':'OK', go:g(brokenRule)},
-    {ok:!lateRule, l:'Rules only depend on earlier answers', s: lateRule?'Out of order':'OK', go:g(lateRule)},
-    {ok:!longLabel.length, l:'Labels are under 90 characters', s: longLabel.length?`${longLabel.length} long`:'OK', go:g(longLabel[0],'label')},
-    {ok:ratio>=4.5, l:'Brand color passes contrast on buttons', s: ratio>=4.5?'OK':`${ratio.toFixed(1)}:1`, tab:'brand'},
-  ].sort((a,b)=>a.ok-b.ok);
-}
 function openPublish(){
-  const checks = publishChecks(); const ready = checks.every(c=>c.ok);
+  ui.iss = computeIssues(); syncIssues(); const {issues, blockers} = ui.iss; const blocks = issues.filter(i=>i.sev==='block'), warns = issues.filter(i=>i.sev==='warn');
   const changes = changesSinceLive(); const first = changes===null; const none = changes && !changes.length; const SHOW = 8;
-  const row = (c,i,cls) => `<li class="${cls}" data-i="${i}"><span class="ci ${c.ok===false?'warn':c.ok?'ok':'chg'}">${icon(c.i || (c.ok?'i-check':'i-warn'),12)}</span><b>${esc(c.l || c.t)}</b><span>${esc(c.s || c.n)}</span></li>`;
+  const irow = (c,i) => `<li class="${c.go||c.fix?'clk':''}" data-iss="${i}"><span class="ci ${c.sev}">${icon(c.sev==='block'?'i-x':'i-warn',12)}</span><b>${esc(c.l)}${c.s?`<span class="sub2">${esc(c.s)}</span>`:''}</b>${c.fix?`<button class="btn sm" data-fix="${i}">${fixLabel(c.fix)}</button>`:''}</li>`;
+  const crow = (c,i) => `<li class="${c.go||c.tab?'clk':''}" data-chg="${i}"><span class="ci chg">${icon(c.i,12)}</span><b>${esc(c.t)}</b><span>${esc(c.n)}</span></li>`;
   modal(`<div class="mh"><h2>Review &amp; publish</h2>${liveRev()?`<span class="pill mono">live ${liveRev()}</span>`:''}<button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
     <div class="mb">
+      ${blocks.length ? `<div class="f"><label>Fix before publishing · ${blocks.length}</label><ul class="checklist">${blocks.map((c,i)=>irow(c, issues.indexOf(c))).join('')}</ul></div>` : ''}
+      ${warns.length ? `<div class="f"><label>Worth a look · ${warns.length}</label><ul class="checklist">${warns.map(c=>irow(c, issues.indexOf(c))).join('')}</ul></div>` : ''}
+      ${!issues.length ? `<div class="note ok">${icon('i-check')}<span>Every check passes.</span></div>` : ''}
       <div class="f"><label>${first?'First publish':none?'Changes since live':`Changes since live · ${changes.length}`}</label>
-        ${first ? `<div class="empty"><b>Nothing is live yet</b>Publishing makes the whole form available to new borrowers.</div>` : none ? `<div class="empty"><b>Up to date</b>The draft matches what borrowers see.</div>` : `<ul class="checklist">${changes.slice(0,SHOW).map((c,i)=>row(c,i,c.go||c.tab?'clk':'')).join('')}${changes.length>SHOW?`<li><span class="ci chg">${icon('i-more',12)}</span><b>${changes.length-SHOW} more</b></li>`:''}</ul>`}</div>
-      <div class="f"><label>Checks${ready?'':` · ${checks.filter(c=>!c.ok).length} to fix`}</label><ul class="checklist">${checks.map((c,i)=>row(c,i,c.ok?'':'clk')).join('')}</ul></div>
+        ${first ? `<div class="empty"><b>Nothing is live yet</b>Publishing makes the whole form available to new borrowers.</div>` : none ? `<div class="empty"><b>Up to date</b>The draft matches what borrowers see.</div>` : `<ul class="checklist">${changes.slice(0,SHOW).map(crow).join('')}${changes.length>SHOW?`<li><span class="ci chg">${icon('i-more',12)}</span><b>${changes.length-SHOW} more</b></li>`:''}</ul>`}</div>
       <div class="f"><label>Release note</label><input class="ctl" id="relNote" placeholder="What changed? Optional"></div></div>
-    <div class="mf"><button class="btn" data-close>Not yet</button><button class="btn primary" id="doPublish" ${none?'disabled':''}>${none?'Up to date':ready?'Publish':'Publish anyway'}</button></div>`,
-    m => { m.addEventListener('click', e=>{ const li = e.target.closest('li.clk'); if(!li) return; const list = li.closest('ul').previousElementSibling?.textContent.startsWith('Changes') ? changes : checks; const c = list[+li.dataset.i]; closeModal(); if(c.go) select({kind:c.go.kind, id:c.go.id}, {focus:c.go.focus}); else if(c.tab){ ui.tab = c.tab; renderInspector(); } });
+    <div class="mf"><button class="btn" data-close>Not yet</button><button class="btn primary" id="doPublish" ${none||blockers?'disabled':''}>${blockers?`Fix ${blockers} first`:none?'Up to date':'Publish'}</button></div>`,
+    m => { m.addEventListener('click', e=>{ const fb = e.target.closest('[data-fix]'); if(fb){ e.stopPropagation(); closeModal(); applyFix(issues[+fb.dataset.fix].fix); return; }
+        const li = e.target.closest('li.clk'); if(!li) return; const c = li.dataset.iss!=null ? issues[+li.dataset.iss] : changes[+li.dataset.chg]; closeModal(); if(c.go) select({kind:c.go.kind, id:c.go.id}, {focus:c.go.focus}); else if(c.tab){ ui.tab = c.tab; renderInspector(); } else if(c.fix) applyFix(c.fix); });
       $('#doPublish', m).onclick = ()=>{ const snap = clone({name:state.name, brand:state.brand, style:state.style, styles:state.styles, sections:state.sections}); snap.rev = hash(JSON.stringify(snap)); snap.at = Date.now(); snap.note = $('#relNote', m).value.trim(); try{ localStorage.setItem(LIVE, JSON.stringify(snap)); }catch(e){} closeModal(); persist(); markSaved(); toast(`Published ${snap.rev} — live for new borrowers`,'ok'); }; });
 }
 function openJson(){
