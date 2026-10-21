@@ -124,8 +124,8 @@ svg{display:block;flex:none}
 
 /* Panels */
 .panel{background:var(--panel);display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden;position:relative}
-.panel.left{border-right:1px solid var(--line)}
-.panel.right{border-left:1px solid var(--line)}
+.panel.left{border-right:1px solid var(--line);grid-column:1}
+.panel.right{border-left:1px solid var(--line);grid-column:3}
 .panel>*:not(.resizer){min-width:var(--pw)}
 .panel.left{--pw:var(--left)}.panel.right{--pw:var(--right)}
 .ph{display:flex;align-items:center;justify-content:space-between;gap:8px;height:44px;padding:0 10px 0 14px;flex:none}
@@ -183,7 +183,7 @@ svg{display:block;flex:none}
 .tree-foot .btn span{overflow:hidden;text-overflow:ellipsis}
 
 /* ============================================================ Canvas */
-.stage{position:relative;background:var(--canvas);min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.stage{position:relative;background:var(--canvas);min-width:0;display:flex;flex-direction:column;overflow:hidden;grid-column:2}
 .stage-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;flex:none;min-width:0}
 .crumb{display:flex;align-items:center;gap:6px;min-width:0;height:28px;padding:0 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);font-size:12.5px;color:var(--t3);white-space:nowrap}
 .crumb .c{overflow:hidden;text-overflow:ellipsis;min-width:0;cursor:pointer;transition:color var(--fast)}
@@ -286,6 +286,8 @@ svg{display:block;flex:none}
 .dock button:disabled{opacity:.3;cursor:not-allowed}
 .dock button.danger:hover{background:var(--err-soft);color:var(--err)}
 .dock .sep{width:1px;height:20px;background:var(--line);margin:0 4px;flex:none}
+.dock .m-only{display:none}
+.m-close{display:none}
 
 /* ============================================================ Inspector */
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:8px 10px 0;padding:3px;background:var(--panel-3);border-radius:var(--r2);border:1px solid var(--line);position:relative;flex:none}
@@ -477,23 +479,55 @@ textarea.code{font-family:var(--mono);font-size:11.5px;min-height:240px;backgrou
 /* ============================================================ Responsive */
 @media (max-width:1180px){:root{--left:252px;--right:312px}}
 @media (max-width:900px){
-  .app{grid-template-columns:0 1fr 0!important}
+  .app{grid-template-columns:1fr!important}
+  .stage{grid-column:1}
   .panel.left,.panel.right{position:fixed;top:var(--top);bottom:0;width:min(86vw,340px);z-index:40;box-shadow:var(--sh-3);transform:translateX(-100%);transition:transform var(--med) var(--ease)}
   .panel.right{right:0;left:auto;transform:translateX(100%)}
   .app[data-left="open"] .panel.left,.app[data-right="open"] .panel.right{transform:none}
   .panel>*:not(.resizer){min-width:0}
   .resizer{display:none}
-  .topbar{grid-template-columns:auto 1fr auto;padding:0 8px}
-  .topbar .name-btn span{max-width:120px}
-  .topbar .sep,.topbar .logo span.w,.btn .kbd,#saveBtn{display:none}
-  .stage-scroll{padding:6px 12px 110px}
-  .stage-bar{padding:8px 10px}
-  .scr-body{padding:28px 18px 24px}
-  .dock{bottom:12px}
-  .drawer-scrim{position:fixed;inset:var(--top) 0 0;background:rgba(0,0,0,.3);z-index:35;display:none}
+  .topbar{grid-template-columns:auto 1fr auto;padding:0 6px;gap:4px}
+  .topbar .logo{display:none}
+  .topbar .sep,.btn .kbd,#saveBtn,#publishBtn span{display:none}
+  #publishBtn{width:32px;padding:0}
+  .name-btn{flex:1;min-width:0;padding:0 6px}
+  .name-btn span{max-width:none;flex:1}
+  .pill#savePill{width:22px;padding:0;justify-content:center;flex:none}
+  .pill#savePill #saveText{display:none}
+  .stage-bar{padding:8px 10px;gap:8px}
+  .crumb{flex:1}
+  .zoom,#themeBtn,#devSeg{display:none}
+  .stage-scroll{padding:4px 10px 112px}
+  .device,.stage[data-device] .device{max-width:none}
+  .frame{border-radius:var(--r3)}
+  .scr-body{padding:24px 16px 24px;min-height:0}
+  .fields{gap:12px}
+  .dock{bottom:calc(12px + env(safe-area-inset-bottom));gap:0;padding:4px}
+  .dock .m-hide{display:none}
+  .dock .m-only{display:grid}
+  .drawer-scrim{position:fixed;inset:var(--top) 0 0;background:rgba(0,0,0,.35);z-index:35;display:none;animation:fade var(--fast)}
   .app[data-left="open"] .drawer-scrim,.app[data-right="open"] .drawer-scrim{display:block}
+  .ctl,.search input,.inp input,.inp select,.opt .ctl,textarea.ctl{font-size:16px}
+  .opt .val input{font-size:12px}
+  .scrim{padding:6vh 10px 10px}
+  .modal{max-height:88vh}
+  .tree-foot{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+  .insp{padding-bottom:calc(48px + env(safe-area-inset-bottom))}
+  .toasts{left:12px;right:12px;bottom:calc(72px + env(safe-area-inset-bottom));align-items:stretch}
+  .toast{min-width:0;max-width:none}
+  .stage[data-mode="test"] #dockAdd{display:none}
+  .m-close{display:grid;position:absolute;top:8px;right:8px;z-index:6}
+  .panel.right .m-close{top:11px;right:14px}
+  .panel.right .tabs{margin-right:46px}
+  .panel.left .ph{padding-right:44px}
 }
-@media (max-width:560px){.g2,.g3{grid-template-columns:1fr}.shortcuts{grid-template-columns:1fr}.topbar .seg button{padding:0 9px}.topbar .seg button .w{display:none}}
+@media (hover:none){
+  .row .more,.row .n,.row .grip{opacity:1}
+  .fw.sel .hd,.fw.sel .fx{opacity:1}
+  [data-tip]::after{display:none}
+  .choice:hover{border-color:var(--fl2)}
+}
+@media (max-width:560px){.g2,.g3{grid-template-columns:1fr}.shortcuts{grid-template-columns:1fr}.topbar .seg button{padding:0 9px}.topbar .seg button .w{display:none}.typegrid{grid-template-columns:1fr 1fr}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0ms!important;animation-duration:0ms!important}}
 @media print{.topbar,.panel,.dock,.stage-bar{display:none!important}.app{display:block}.stage{background:#fff}}
 </style>
@@ -589,6 +623,7 @@ textarea.code{font-family:var(--mono);font-size:11.5px;min-height:240px;backgrou
 
   <aside class="panel left" aria-label="Structure">
     <div class="ph"><span class="t">Structure</span><span class="meta" id="treeStats"></span></div>
+    <button class="btn ghost icon sm m-close" data-closepanel="left" aria-label="Close structure"><svg width="15" height="15"><use href="#i-x"/></svg></button>
     <div class="search"><svg width="14" height="14"><use href="#i-search"/></svg><input id="treeSearch" type="search" placeholder="Search questions" autocomplete="off" aria-label="Search questions" /><span class="kbd">/</span></div>
     <div class="tree scroll" id="tree" role="tree" aria-label="Sections, screens and fields"></div>
     <div class="tree-foot">
@@ -622,19 +657,21 @@ textarea.code{font-family:var(--mono);font-size:11.5px;min-height:240px;backgrou
       <button id="dockUndo" data-tip="Undo  ⌘Z" disabled><svg width="16" height="16"><use href="#i-undo"/></svg></button>
       <button id="dockRedo" data-tip="Redo  ⇧⌘Z" disabled><svg width="16" height="16"><use href="#i-redo"/></svg></button>
       <span class="sep"></span>
-      <button id="dockLibrary" data-tip="Question library"><svg width="16" height="16"><use href="#i-library"/></svg></button>
-      <button id="dockOpen" data-tip="Saved forms"><svg width="16" height="16"><use href="#i-folder"/></svg></button>
-      <button id="dockNew" data-tip="New form"><svg width="16" height="16"><use href="#i-file-plus"/></svg></button>
-      <span class="sep"></span>
-      <button id="dockJson" data-tip="Form JSON"><svg width="16" height="16"><use href="#i-code"/></svg></button>
+      <button id="dockAdd" class="m-only" data-tip="Add field"><svg width="16" height="16"><use href="#i-plus"/></svg></button>
+      <button id="dockLibrary" class="m-hide" data-tip="Question library"><svg width="16" height="16"><use href="#i-library"/></svg></button>
+      <button id="dockOpen" class="m-hide" data-tip="Saved forms"><svg width="16" height="16"><use href="#i-folder"/></svg></button>
+      <button id="dockNew" class="m-hide" data-tip="New form"><svg width="16" height="16"><use href="#i-file-plus"/></svg></button>
+      <span class="sep m-hide"></span>
+      <button id="dockJson" class="m-hide" data-tip="Form JSON"><svg width="16" height="16"><use href="#i-code"/></svg></button>
       <button id="dockCmd" data-tip="Commands  ⌘K"><svg width="16" height="16"><use href="#i-cmd"/></svg></button>
-      <button id="dockKeys" data-tip="Shortcuts  ?"><svg width="16" height="16"><use href="#i-keyboard"/></svg></button>
+      <button id="dockKeys" class="m-hide" data-tip="Shortcuts  ?"><svg width="16" height="16"><use href="#i-keyboard"/></svg></button>
       <span class="sep"></span>
       <button id="dockClose" class="danger" data-tip="Close"><svg width="16" height="16"><use href="#i-x"/></svg></button>
     </div>
   </main>
 
   <aside class="panel right" aria-label="Inspector">
+    <button class="btn ghost icon sm m-close" data-closepanel="right" aria-label="Close inspector"><svg width="15" height="15"><use href="#i-x"/></svg></button>
     <div class="tabs" role="tablist" id="tabs"><span class="thumb"></span>
       <button role="tab" aria-selected="true" data-tab="form"><svg width="15" height="15"><use href="#i-form"/></svg>Form</button>
       <button role="tab" aria-selected="false" data-tab="brand"><svg width="15" height="15"><use href="#i-brand"/></svg>Brand</button>
@@ -991,7 +1028,8 @@ function renderAll(){ renderTree(); renderCanvas(); renderInspector(); persist()
 /* ============================================================
    Interactions: selection, tree
    ============================================================ */
-function select(ref, o={}){ sel = ref; if(ui.mode==='test') setMode('edit', {silent:true}); const r = find(ref); if(r?.section && ref.kind!=='section') r.section.open = true; if(r?.screen && ref.kind==='field') r.screen.open = true; ui.tab='form'; ui._noScroll = !!o.noScroll; renderAll(); ui._noScroll=false; if(o.focus) setTimeout(()=>{ const el = $(`#insp [data-bind="${o.focus}"]`); el?.focus(); el?.select?.(); }, 40); }
+const narrow = ()=>innerWidth<=900;
+function select(ref, o={}){ sel = ref; if(narrow()){ $('#app').dataset.left='closed'; if(o.inspect) $('#app').dataset.right='open'; else if(!o.keepRight) $('#app').dataset.right='closed'; } if(ui.mode==='test') setMode('edit', {silent:true}); const r = find(ref); if(r?.section && ref.kind!=='section') r.section.open = true; if(r?.screen && ref.kind==='field') r.screen.open = true; ui.tab='form'; ui._noScroll = !!o.noScroll; renderAll(); ui._noScroll=false; if(o.focus) setTimeout(()=>{ const el = $(`#insp [data-bind="${o.focus}"]`); el?.focus(); el?.select?.(); }, 40); }
 document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if(g && !e.target.closest('.ctxmenu')){ select({kind:g.dataset.go, id:g.dataset.id}); } });
 
 const tree = $('#tree');
@@ -1000,7 +1038,7 @@ tree.addEventListener('click', e => {
   const ref = {kind:node.dataset.kind, id:node.dataset.id};
   if(act?.dataset.act==='toggle'){ e.stopPropagation(); const r = find(ref); const obj = r.screen || r.section; obj.open = node.dataset.open!=='true'; node.dataset.open = obj.open; node.querySelector('.row').setAttribute('aria-expanded', obj.open); persist(); return; }
   if(act?.dataset.act==='menu'){ e.stopPropagation(); openMenu(e, ref); return; }
-  if(ui.mode==='edit' && sel.kind===ref.kind && sel.id===ref.id && ref.kind!=='field'){ node.querySelector('[data-act=toggle]').click(); return; }
+  if(ui.mode==='edit' && sel.kind===ref.kind && sel.id===ref.id && ref.kind!=='field' && !narrow()){ node.querySelector('[data-act=toggle]').click(); return; }
   select(ref, {noScroll:true});
 });
 tree.addEventListener('dblclick', e => { const node = e.target.closest('.node'); if(!node) return; select({kind:node.dataset.kind, id:node.dataset.id}, {focus: node.dataset.kind==='field'?'label':'title'}); });
@@ -1087,7 +1125,7 @@ screenEl.addEventListener('click', e => {
   const ch = e.target.closest('.choice');
   if(ch && ui.mode==='test'){ const fid = ch.dataset.fid, v = ch.dataset.opt; const f = allFields().find(x=>x.id===fid); if(f.type==='multi'){ const cur = new Set(ui.answers[fid]||[]); cur.has(v)?cur.delete(v):cur.add(v); ui.answers[fid]=[...cur]; } else ui.answers[fid]=v; delete ui.errors[fid]; renderCanvas(); return; }
   if(ui.mode!=='edit') return;
-  const fw = e.target.closest('.fw'); if(fw){ if(sel.kind==='field' && sel.id===fw.dataset.fid) return; select({kind:'field', id:fw.dataset.fid}); return; }
+  const fw = e.target.closest('.fw'); if(fw){ if(sel.kind==='field' && sel.id===fw.dataset.fid){ if(narrow()) $('#app').dataset.right='open'; return; } select({kind:'field', id:fw.dataset.fid}, {inspect:narrow()}); return; }
   const t = e.target.closest('.scr-title'); if(t && !(sel.kind==='screen' && sel.id===t.dataset.sid)){ sel = {kind:'screen', id:t.dataset.sid}; renderTree(); renderInspector(); $$('.fw.sel', screenEl).forEach(x=>x.classList.remove('sel')); t.classList.add('sel'); }
 });
 screenEl.addEventListener('input', e => { if(ui.mode!=='test') return; const inp = e.target.closest('[data-fid]'); if(inp){ ui.answers[inp.dataset.fid]=inp.value; if(ui.errors[inp.dataset.fid]){ delete ui.errors[inp.dataset.fid]; inp.closest('.fw')?.classList.remove('err'); inp.closest('.fw')?.querySelector('.ferr')?.remove(); } } });
@@ -1100,7 +1138,7 @@ function nextScreen(){ const screens = testScreens(); const scr = screens[ui.tes
   if(Object.keys(ui.errors).length){ renderCanvas(); const first = $('.fw.err', screenEl); first?.classList.add('shake'); first?.scrollIntoView({block:'center',behavior:'smooth'}); first?.querySelector('input,select,[tabindex="0"]')?.focus({preventScroll:true}); return; }
   if(ui.testIdx >= screens.length-1){ ui.done = true; renderCanvas({anim:true}); toast('Test run complete','ok'); return; }
   ui.testIdx++; renderCanvas({anim:true}); $('#stageScroll').scrollTo({top:0,behavior:'smooth'}); }
-$('#crumb').addEventListener('click', e => { const g = e.target.closest('[data-go]'); if(g) select({kind:g.dataset.go, id:g.dataset.id}); });
+$('#crumb').addEventListener('click', e => { const g = e.target.closest('[data-go]'); if(g){ select({kind:g.dataset.go, id:g.dataset.id}); if(narrow() && g.dataset.go==='section') $('#app').dataset.left='open'; } });
 
 /* mode / device / zoom / theme / panels */
 function segThumb(segEl){ const on = $('[aria-pressed="true"]', segEl); const th = $('.thumb', segEl); if(!on||!th) return; th.style.width = on.offsetWidth+'px'; th.style.transform = `translateX(${on.offsetLeft-3}px)`; }
@@ -1115,6 +1153,7 @@ function setTheme(t){ document.documentElement.dataset.theme = t; prefs.theme=t;
 $('#themeBtn').onclick = ()=>{ const dark = document.documentElement.dataset.theme==='dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches); setTheme(dark?'light':'dark'); };
 function togglePanel(side){ const a = $('#app'); const k = side==='left'?'left':'right'; a.dataset[k] = a.dataset[k]==='open' ? 'closed' : 'open'; if(innerWidth<=900 && a.dataset[k]==='open'){ a.dataset[k==='left'?'right':'left']='closed'; } prefs[k+'Open'] = a.dataset[k]==='open'; savePrefs(); setTimeout(()=>{ segThumb($('#modeSeg')); segThumb($('#devSeg')); }, 240); }
 $('#toggleLeft').onclick = ()=>togglePanel('left'); $('#toggleRight').onclick = ()=>togglePanel('right');
+$$('[data-closepanel]').forEach(b=>b.onclick=()=>{ $('#app').dataset[b.dataset.closepanel]='closed'; });
 $('#drawerScrim').onclick = ()=>{ $('#app').dataset.left='closed'; $('#app').dataset.right='closed'; };
 
 /* resizable panels */
@@ -1131,6 +1170,7 @@ const insp = $('#insp');
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('[role=tab]'); if(b){ ui.tab=b.dataset.tab; renderInspector(); } });
 $('#tabs').addEventListener('keydown', e => { const t = ['form','brand','style','code']; const i = t.indexOf(ui.tab); if(e.key==='ArrowRight'){ ui.tab=t[(i+1)%4]; renderInspector(); $(`#tabs [data-tab="${ui.tab}"]`).focus(); } if(e.key==='ArrowLeft'){ ui.tab=t[(i+3)%4]; renderInspector(); $(`#tabs [data-tab="${ui.tab}"]`).focus(); } });
 insp.addEventListener('click', e => {
+  if(narrow() && e.target.closest('.ictx .kind')){ $('#app').dataset.right='closed'; return; }
   const seg = e.target.closest('[data-seg] button'); if(seg){ bind(seg.parentElement.dataset.seg, seg.dataset.v); return; }
   const act = e.target.closest('[data-act]'); if(!act) return; const a = act.dataset.act; const r = find(sel); const t = r?.field || r?.screen || r?.section;
   if(a==='sec'){ const s = act.closest('.sec'); const k = s.dataset.sec; secOpen[k] = s.dataset.open!=='true'; s.dataset.open = secOpen[k]; act.setAttribute('aria-expanded', secOpen[k]); return; }
@@ -1206,9 +1246,9 @@ function openTypePicker(screenId){
   modal(`<div class="mh"><h2>Add to “${esc(screen.title)}”</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
     <div class="mb"><div class="search" style="margin:0"><svg width="14" height="14"><use href="#i-search"/></svg><input id="typeQ" placeholder="Filter types" autocomplete="off"></div><div class="typegrid" id="typeGrid">${Object.entries(TYPES).map(([k,v])=>`<button class="typecard" data-type="${k}"><span class="ico">${icon(v.icon,15)}</span><b>${v.label}</b><span>${v.desc}</span></button>`).join('')}</div></div>`,
     m => { const q = $('#typeQ', m); q.oninput = ()=>{ $$('.typecard', m).forEach(c => c.hidden = !c.textContent.toLowerCase().includes(q.value.toLowerCase())); }; q.onkeydown = e=>{ if(e.key==='Enter'){ $('.typecard:not([hidden])', m)?.click(); } };
-      m.addEventListener('click', e => { const t = e.target.closest('[data-type]'); if(!t) return; closeModal(); commit(()=>{ const f = F('New question', t.dataset.type); if(HAS_OPTS(f.type)) f.options = opts('Option 1','Option 2'); screen.open=true; screen.fields.push(f); sel={kind:'field',id:f.id}; }); setTimeout(()=>{ const el=$('#insp [data-bind=label]'); el?.focus(); el?.select(); },40); }); q.focus(); });
+      m.addEventListener('click', e => { const t = e.target.closest('[data-type]'); if(!t) return; closeModal(); commit(()=>{ const f = F('New question', t.dataset.type); if(HAS_OPTS(f.type)) f.options = opts('Option 1','Option 2'); screen.open=true; screen.fields.push(f); sel={kind:'field',id:f.id}; }); if(narrow()){ $('#app').dataset.left='closed'; $('#app').dataset.right='open'; } setTimeout(()=>{ const el=$('#insp [data-bind=label]'); el?.focus(); el?.select(); },40); }); q.focus(); });
 }
-$('#addFieldBtn').onclick = ()=>openTypePicker();
+$('#addFieldBtn').onclick = ()=>openTypePicker(); $('#dockAdd').onclick = ()=>openTypePicker();
 $('#addMoreBtn').onclick = e => { const r = e.currentTarget.getBoundingClientRect(); menu.innerHTML = `<button>${icon('i-screen',14)}Add screen</button><button>${icon('i-section',14)}Add section</button>`; const [a,b] = $$('button',menu); a.onclick=()=>{ closeMenu(); addScreen(); }; b.onclick=()=>{ closeMenu(); addSection(); }; menu.style.left = r.left+'px'; menu.style.top = (r.top-80)+'px'; menu.dataset.open='true'; a.focus(); };
 $('#nameBtn').onclick = ()=>prompt2('Form name', state.name, v => { commit(()=>{ state.name=v; }); $('#formName').textContent=v; }, state.name);
 
