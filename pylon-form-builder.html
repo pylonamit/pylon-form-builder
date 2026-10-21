@@ -4,6 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Pylon Form Builder</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2318181a'/%3E%3Cpath d='M16 7l9 5.2v10.6L16 28l-9-5.2V12.2z' fill='none' stroke='%23fff' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M16 13v9M11.8 15.2L16 17.5l4.2-2.3' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#19191b" />
 <meta name="description" content="A single-file form builder for Pylon intake: structure, live canvas with test mode, and a focused inspector. Resizable panes, brand and type controls, keyboard-first." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -244,6 +247,10 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 .fw .fx button:hover{background:var(--fl);color:var(--ft1)}
 .fw .fx button.del:hover{background:var(--err-soft);color:var(--err)}
 .fw.sel-in .hd{animation:fadein var(--fast) var(--ease)}
+.fw.sel .tag{cursor:grab}
+.fw.dragging{opacity:.4}
+.fw.drop-before::before,.fw.drop-after::before{content:"";position:absolute;left:8px;right:8px;height:2px;background:var(--sel);border-radius:2px;z-index:3}
+.fw.drop-before::before{top:-12px}.fw.drop-after::before{bottom:-8px}
 .fl{display:flex;align-items:baseline;gap:8px;font-weight:500;font-size:14px;margin-bottom:8px;color:var(--ft1)}
 /* Label, help text and option text edit in place on the selected field. The box only appears on hover and focus. */
 .ce{border-radius:var(--r0);padding:0 2px;margin:0 -2px;min-width:1ch;transition:box-shadow var(--fast),background var(--fast)}
@@ -251,7 +258,6 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 .stage[data-mode="edit"] .fw.sel .ce{cursor:text}
 .stage[data-mode="edit"] .fw.sel .ce:hover{box-shadow:inset 0 0 0 1px var(--fl2)}
 .ce:focus{outline:0;box-shadow:inset 0 0 0 1.5px var(--sel),0 0 0 3px var(--sel-ring);background:var(--fp)}
-.fw.sel .fd.ce:empty{display:block}
 .fl .optl{color:var(--ft3);font-weight:400;font-size:13px}
 .fd{color:var(--ft2);font-size:13px;margin:-4px 0 8px}
 .ferr{display:flex;align-items:center;gap:6px;color:var(--err);font-size:13px;margin-top:8px;animation:scrin var(--med) var(--ease)}
@@ -345,7 +351,8 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 textarea.ctl{height:auto;min-height:34px;padding:7px 10px;resize:none;line-height:1.45;transition:min-height var(--med) var(--ease),border-color var(--fast),box-shadow var(--fast)}
 textarea.ctl:focus,textarea.ctl.has{min-height:68px}
 textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background:var(--panel-2);white-space:pre;tab-size:2;resize:vertical}
-textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
+textarea.code.snip{min-height:0;resize:none;line-height:1.6;white-space:pre-wrap;word-break:break-all}
+.map.link .mt b{font-family:var(--mono);font-size:12px}
 .selw{position:relative;min-width:0}
 .selw select{appearance:none;-webkit-appearance:none;padding-right:28px;cursor:pointer;text-overflow:ellipsis}
 .selw::after{content:"";position:absolute;right:11px;top:11px;width:6px;height:6px;border-right:1.5px solid var(--t3);border-bottom:1.5px solid var(--t3);transform:rotate(45deg);pointer-events:none}
@@ -393,7 +400,8 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
 .map button.mt{width:auto;height:auto;display:flex;flex-direction:column;align-items:flex-start;flex:1;min-width:0;text-align:left;color:inherit;padding:2px 4px;margin:-2px -4px}
 .map button.mt>*{max-width:100%}
 .map button.mt:hover{background:var(--ink-soft)}
-.checklist b .sub2,.checklist li .sub2{display:block;font-family:var(--mono);font-weight:400;font-size:11px;color:var(--t3)}
+.checklist .sub2{display:block;font-weight:400;font-size:12px;color:var(--t3);overflow:hidden;text-overflow:ellipsis}
+.checklist .sub2.mono{font-family:var(--mono);font-size:11px}
 .checklist li.lgrp{background:none;padding:10px 10px 2px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);font-weight:600}
 .checklist li[aria-disabled="true"]{opacity:.5}
 .checklist .btn{flex:none}
@@ -443,15 +451,15 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
 .stylecard span{font-size:11px;color:var(--t3)}
 
 /* ============================================================ Overlays */
-.toasts{position:fixed;top:calc(var(--top) + 12px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:60;pointer-events:none}
+.toasts{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:60;pointer-events:none}
 .toast{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:9px 12px 9px 10px;background:var(--t1);color:var(--bg);border-radius:var(--r2);box-shadow:var(--sh-3);font-weight:500;animation:tin var(--med) var(--ease);min-width:200px;max-width:360px}
 .toast .ti{width:22px;height:22px;border-radius:var(--r1);background:rgba(255,255,255,.14);display:grid;place-items:center;flex:none}
 .toast.ok .ti{background:var(--ok);color:#fff}.toast.warn .ti{background:var(--warn);color:#fff}
 .toast .tx{flex:1}
 .toast .btn{background:rgba(255,255,255,.12);border-color:transparent;color:inherit}
 .toast.out{animation:tout 180ms forwards}
-@keyframes tin{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
-@keyframes tout{to{opacity:0;transform:translateY(-4px)}}
+@keyframes tin{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes tout{to{opacity:0;transform:translateY(4px)}}
 .scrim{position:fixed;inset:0;background:rgba(10,10,12,.4);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:none;z-index:50;align-items:flex-start;justify-content:center;padding:10vh 16px 16px;animation:fade var(--fast)}
 .scrim[data-open="true"]{display:flex}
 .scrim[data-open="closing"]{display:flex;pointer-events:none;animation:fadeout 140ms var(--ease) forwards}
@@ -542,7 +550,7 @@ textarea.code.snip{min-height:0;resize:none;line-height:1.6;overflow:auto}
   .modal{max-height:88vh}
   .tree-foot{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
   .insp{padding-bottom:calc(48px + env(safe-area-inset-bottom))}
-  .toasts{left:12px;right:12px;top:calc(var(--top) + 8px);transform:none;align-items:stretch}
+  .toasts{left:12px;right:12px;bottom:calc(68px + env(safe-area-inset-bottom));transform:none;align-items:stretch}
   .toast{min-width:0;max-width:none}
   .m-close{display:grid;position:absolute;top:8px;right:8px;z-index:6}
   .m-ph{display:flex}.m-ph+.tabs{margin-top:0}
@@ -998,10 +1006,10 @@ function renderCanvas(o={}){
 }
 function fieldWrap(f){
   const s = ui.mode==='edit' && sel.kind==='field' && sel.id===f.id; const err = ui.errors[f.id]; const ed = s ? 'contenteditable="true" spellcheck="false"' : '';
-  return `<div class="fw ${s?'sel':''} ${s&&ui.selAnim===f.id?'sel-in':''} ${err?'err':''}" data-fid="${f.id}" tabindex="${ui.mode==='edit'?0:-1}" style="${appStyle(f)}">
+  return `<div class="fw ${s?'sel':''} ${s&&ui.selAnim===f.id?'sel-in':''} ${err?'err':''}" data-fid="${f.id}" tabindex="${ui.mode==='edit'?0:-1}" ${ui.mode==='edit'?'draggable="true"':''} style="${appStyle(f)}">
     <div class="hd"><span class="tag">${TYPES[f.type].label}${f.conditions?.length?' · conditional':''}${ui.iss?.byId[f.id]?`<i class="dot ${ui.iss.byId[f.id]}"></i>`:''}</span><div class="fx"><button data-act="up" data-tip="Move up" aria-label="Move up">${icon('i-arrow-up')}</button><button data-act="dup" data-tip="Duplicate" aria-label="Duplicate">${icon('i-copy')}</button><button class="del" data-act="del" data-tip="Delete" aria-label="Delete">${icon('i-trash')}</button></div></div>
     <div class="fl"><span class="ce" data-edit="label" data-ph="Question" ${ed}>${esc(f.label)}</span>${f.required?'':'<span class="optl">Optional</span>'}</div>
-    ${f.description||s?`<div class="fd ce" data-edit="description" data-ph="Add help text" ${ed}>${esc(f.description)}</div>`:''}
+    ${f.description?`<div class="fd ce" data-edit="description" data-ph="Help text" ${ed}>${esc(f.description)}</div>`:''}
     ${preview(f)}
     ${err?`<div class="ferr">${icon('i-warn')}${esc(err)}</div>`:''}
   </div>`;
@@ -1102,11 +1110,11 @@ function renderStyle(){
     + sec('styles','Reusable styles', `${state.styles.length ? state.styles.map(st=>`<div class="stylecard">${icon('i-sparkle')}<b>${esc(st.name)}</b><span>${allFields().filter(f=>f.styleRef===st.id).length} uses</span><button class="btn sm icon ghost" data-act="rmstyle" data-id="${st.id}" data-tip="Delete" data-tip-pos="left">${icon('i-x')}</button></div>`).join('') : `<div class="empty"><b>None yet</b>Save a field’s appearance to reuse it.</div>`}<button class="add-row" data-act="newstyle">${icon('i-plus')}New style from selection</button>`, state.styles.length?`${state.styles.length}`:'');
 }
 function coverageHtml(){ const by = {}; allFields().forEach(f=>{ if(f.map) (by[f.map] ||= []).push(f); }); const collected = SCHEMA.filter(sc=>by[sc.path]).length; const missingReq = REQUIRED_PATHS.filter(p=>!by[p]).length;
-  const row = sc => { const fs = by[sc.path]||[]; const st = fs.length>1 ? 'block' : fs.length ? 'ok' : sc.req ? 'block' : 'chg'; const txt = fs.length>1 ? 'Collected twice' : fs.length ? `“${esc(fs[0].label)}”` : sc.req ? 'Missing · needed' : 'Not collected'; return `<li class="clk" data-cov="${sc.path}" ${fs.length?`data-go="field" data-id="${fs[fs.length-1].id}"`:''}><span class="ci ${st}">${icon(st==='ok'?'i-check':st==='block'?'i-x':'i-plus',12)}</span><b>${esc(sc.label)}<span class="sub2">${sc.path}</span></b><span>${txt}</span></li>`; };
+  const row = sc => { const fs = by[sc.path]||[]; const st = fs.length>1 ? 'block' : fs.length ? 'ok' : sc.req ? 'block' : 'chg'; const txt = fs.length>1 ? 'Collected twice' : fs.length ? `“${esc(fs[0].label)}”` : sc.req ? 'Missing · needed' : 'Not collected'; return `<li class="clk" data-cov="${sc.path}" ${fs.length?`data-go="field" data-id="${fs[fs.length-1].id}"`:''}><span class="ci ${st}">${icon(st==='ok'?'i-check':st==='block'?'i-x':'i-plus',12)}</span><b>${esc(sc.label)}<span class="sub2 mono">${sc.path}</span></b><span>${txt}</span></li>`; };
   const customs = allFields().filter(f=>isCustom(f.map)); const unknown = allFields().filter(f=>f.map && !schemaOf(f.map) && !isCustom(f.map));
   return `<div class="note">${icon('i-info')}<span>${collected} of ${SCHEMA.length} loan-file fields collected${missingReq?`, ${missingReq} needed for every loan still missing`:''}.</span></div>
     <ul class="checklist">${SCHEMA_GROUPS.map(g=>`<li class="lgrp">${g}</li>${SCHEMA.filter(sc=>sc.group===g).map(row).join('')}`).join('')}
-    ${customs.length?`<li class="lgrp">Custom fields</li>${customs.map(f=>`<li class="clk" data-go="field" data-id="${f.id}"><span class="ci chg">${icon('i-sparkle',12)}</span><b>${esc(mapTitle(f.map))}<span class="sub2">${esc(f.map)}</span></b><span>“${esc(f.label)}”</span></li>`).join('')}`:''}
+    ${customs.length?`<li class="lgrp">Custom fields</li>${customs.map(f=>`<li class="clk" data-go="field" data-id="${f.id}"><span class="ci chg">${icon('i-sparkle',12)}</span><b>${esc(mapTitle(f.map))}<span class="sub2 mono">${esc(f.map)}</span></b><span>“${esc(f.label)}”</span></li>`).join('')}`:''}
     ${unknown.length?`<li class="lgrp">Not in the loan file</li>${unknown.map(f=>`<li class="clk" data-go="field" data-id="${f.id}"><span class="ci warn">${icon('i-warn',12)}</span><b>${esc(f.map)}</b><span>“${esc(f.label)}”</span></li>`).join('')}`:''}</ul>`; }
 const EMBED_HOST = 'https://forms.pylon.app';
 function embedId(){ if(!state.embedId){ state.embedId = 'frm_' + hash(state.name + '|' + Date.now()); persist(); } return state.embedId; }
@@ -1118,8 +1126,8 @@ function renderCode(){
   const e = embedOf(); const fmt = ui.codeFmt==='theme' ? 'theme' : 'form'; const payload = fmt==='form' ? exportForm() : {brand:state.brand, style:state.style, styles:state.styles}; const snip = embedSnippet();
   const install = `<div class="f"><span class="lb">Show it</span><div class="segi full" data-seg="embed.mode"><button aria-pressed="${e.mode==='inline'}" data-v="inline">On a page</button><button aria-pressed="${e.mode==='modal'}" data-v="modal">As a pop-up</button><button aria-pressed="${e.mode==='hosted'}" data-v="hosted">Hosted link</button></div></div>
     <div class="f"><span class="lb">Version</span><div class="segi full" data-seg="embed.version"><button aria-pressed="${e.version==='live'}" data-v="live">Live</button><button aria-pressed="${e.version==='draft'}" data-v="draft">Draft</button></div><span class="sub">${e.version==='draft'?'Shows unpublished changes. For a staging page only.':'What borrowers see. Updates when you publish.'}</span></div>
-    ${e.mode==='hosted' ? `<div class="f"><label>Link</label><div class="map"><span class="mi">${icon('i-link')}</span><span class="mt"><b>${esc(snip)}</b><span>Share it, print it, or put it behind a button</span></span><button data-act="copysnip" data-tip="Copy link" data-tip-pos="left">${icon('i-copy')}</button></div></div>`
-    : `<div class="f"><label>${e.mode==='modal'?'Button and script':'Snippet'}</label><textarea class="ctl code snip" readonly rows="3" spellcheck="false">${esc(snip)}</textarea><span class="sub">${e.mode==='modal'?'Put the button anywhere on the page and the script once, before </body>.':'Paste it where the form should appear.'}</span></div><div class="btnrow"><button class="btn sm" data-act="copysnip">${icon('i-copy')}Copy snippet</button></div>`}`;
+    ${e.mode==='hosted' ? `<div class="f"><label>Link</label><div class="map link"><span class="mi">${icon('i-link')}</span><span class="mt"><b>${esc(snip)}</b><span>Share it, print it, or put it behind a button</span></span><button data-act="copysnip" data-tip="Copy link" data-tip-pos="left">${icon('i-copy')}</button></div></div>`
+    : `<div class="f"><label>${e.mode==='modal'?'Button and script':'Snippet'}</label><textarea class="ctl code snip" readonly rows="4" spellcheck="false">${esc(snip)}</textarea><span class="sub">${e.mode==='modal'?'Put the button anywhere on the page and the script once, before </body>.':'Paste it where the form should appear.'}</span></div><div class="btnrow"><button class="btn sm" data-act="copysnip">${icon('i-copy')}Copy snippet</button></div>`}`;
   const options = `${sw('embed.prefill', e.prefill, 'Prefill from the page URL', 'Reads lo, source and campaign parameters')}
     ${sw('embed.events', e.events, 'Send page events', 'pylon:step and pylon:complete, for analytics')}
     <div class="f"><span class="lb">Look</span><div class="segi full" data-seg="embed.theme"><button aria-pressed="${e.theme==='brand'}" data-v="brand">Form’s brand</button><button aria-pressed="${e.theme==='inherit'}" data-v="inherit">Match the site</button></div><span class="sub">${e.theme==='inherit'?'Uses the page’s font and colours; the Style tab’s shape still applies.':'Uses the Brand and Style tabs.'}</span></div>`;
@@ -1314,6 +1322,12 @@ function focusEdit(fid, key, oid){ const n = $(`.fw[data-fid="${fid}"] [data-edi
 function editTarget(el){ const f = find({kind:'field', id:el.closest('.fw')?.dataset.fid})?.field; if(!f) return null; const k = el.dataset.edit; const o = k==='opt' ? f.options.find(x=>x.id===el.dataset.oid) : null; if(k==='opt' && !o) return null; return {f, k, o, stored: k==='label' ? f.label : k==='description' ? (f.description||'') : o.label}; }
 function commitEdit(el){ const t = editTarget(el); if(!t) return; const v = el.textContent.trim(); if(v===t.stored) return; if(!v && t.k!=='description'){ el.textContent = t.stored; return; } commit(()=>{ if(t.k==='label') t.f.label = v; else if(t.k==='description') t.f.description = v; else { t.o.label = v; if(!t.o.manual) t.o.value = uniqueValue(t.f, slug(v), t.o.id); } }); }
 function mirrorEdit(el){ const t = editTarget(el); if(!t) return; const v = el.textContent; const box = t.k==='opt' ? $(`#optList .opt[data-oid="${t.o.id}"] [data-opt=label]`) : $(`#insp [data-bind="${t.k}"]`); if(box) box.value = v; }
+/* Drag a field anywhere on its wrapper (not from text being edited or a preview input) and drop it above or below another field on the same screen. */
+let fdrag = null;
+screenEl.addEventListener('dragstart', e => { const fw = e.target.closest?.('.fw'); if(!fw) return; if(ui.mode!=='edit' || e.target.closest('[contenteditable="true"],input,select,textarea')){ e.preventDefault(); return; } fdrag = fw.dataset.fid; fw.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', fdrag); });
+screenEl.addEventListener('dragover', e => { if(!fdrag) return; const fw = e.target.closest('.fw'); if(!fw || fw.dataset.fid===fdrag) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const r = fw.getBoundingClientRect(); const before = e.clientY < r.top + r.height/2; $$('.fw', screenEl).forEach(x => x.classList.remove('drop-before','drop-after')); fw.classList.add(before ? 'drop-before' : 'drop-after'); });
+screenEl.addEventListener('drop', e => { if(!fdrag) return; const fw = e.target.closest('.fw'); if(!fw) return; e.preventDefault(); const before = fw.classList.contains('drop-before'); const list = currentScreen()?.fields; const moving = fdrag; fdrag = null; if(!list) return; commit(()=>{ const i = list.findIndex(x=>x.id===moving); if(i<0) return; const [item] = list.splice(i,1); let j = list.findIndex(x=>x.id===fw.dataset.fid); if(!before) j++; list.splice(j,0,item); }); });
+screenEl.addEventListener('dragend', ()=>{ fdrag = null; $$('.fw', screenEl).forEach(x => x.classList.remove('dragging','drop-before','drop-after')); });
 screenEl.addEventListener('paste', e => { if(!e.target.isContentEditable) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData.getData('text/plain')||'').replace(/\s*\n\s*/g,' ')); });
 screenEl.addEventListener('input', e => { if(ui.mode==='edit'){ const ce = e.target.closest?.('[data-edit]'); if(ce) mirrorEdit(ce); return; } const inp = e.target.closest('[data-fid]'); if(inp){ ui.answers[inp.dataset.fid]=inp.value; if(ui.errors[inp.dataset.fid]){ delete ui.errors[inp.dataset.fid]; inp.closest('.fw')?.classList.remove('err'); inp.closest('.fw')?.querySelector('.ferr')?.remove(); } } });
 screenEl.addEventListener('change', e => { if(ui.mode==='test' && e.target.tagName==='SELECT'){ ui.answers[e.target.dataset.fid]=e.target.value; delete ui.errors[e.target.dataset.fid]; } });
@@ -1441,7 +1455,7 @@ function addSection(){ commit(()=>{ const s = SEC('New section', [], {open:true}
 function addScreen(secId){ const section = secId ? find({kind:'section',id:secId}).section : (find(sel)?.section || state.sections[0]); if(!section) return addSection(); commit(()=>{ const s = S('New screen', []); section.open=true; section.screens.push(s); sel={kind:'screen',id:s.id}; }); setTimeout(()=>{ const el=$('#insp [data-bind=title]'); el?.focus(); el?.select(); },40); }
 /* Rows for the schema lists: a field type icon, the label over its path, and the state of that path in this form. */
 function schemaRows(opts={}){ const by = {}; allFields().forEach(f=>{ if(f.map) (by[f.map] ||= []).push(f); });
-  const row = sc => { const u = (by[sc.path]||[]).find(f=>f.id!==opts.selfId); const dis = u && !opts.allowUsed; return `<li class="${dis?'':'clk'}" data-path="${sc.path}" data-q="${esc((sc.label+' '+sc.path+' '+sc.group).toLowerCase())}" ${dis?'aria-disabled="true"':''} ${u?`data-used="${u.id}"`:''}><span class="ico" style="color:var(--t3)">${icon(TYPES[sc.type]?.icon||'i-text')}</span><b>${esc(sc.label)}<span class="sub2">${sc.path}</span></b><span>${u?`Collected by “${esc(u.label)}”`:sc.req?'Needed for every loan':TYPES[sc.type]?.label||''}</span></li>`; };
+  const row = sc => { const u = (by[sc.path]||[]).find(f=>f.id!==opts.selfId); const dis = u && !opts.allowUsed; return `<li class="${dis?'':'clk'}" data-path="${sc.path}" data-q="${esc((sc.label+' '+sc.path+' '+sc.group).toLowerCase())}" ${dis?'aria-disabled="true"':''} ${u?`data-used="${u.id}"`:''}><span class="ico" style="color:var(--t3)">${icon(TYPES[sc.type]?.icon||'i-text')}</span><b>${esc(sc.label)}<span class="sub2 mono">${sc.path}</span></b><span>${u?`Collected by “${esc(u.label)}”`:sc.req?'Needed for every loan':TYPES[sc.type]?.label||''}</span></li>`; };
   const needed = SCHEMA.filter(sc=>sc.req && !by[sc.path]);
   return `${needed.length && opts.needed ? `<li class="lgrp">Needed for every loan</li>${needed.map(row).join('')}` : ''}${SCHEMA_GROUPS.map(g=>`<li class="lgrp">${g}</li>${SCHEMA.filter(sc=>sc.group===g).map(row).join('')}`).join('')}`; }
 function filterSchemaList(list, q){ q = q.trim().toLowerCase(); $$('li[data-path]', list).forEach(li => li.hidden = !!q && !li.dataset.q.includes(q)); $$('li.lgrp', list).forEach(h => { let n = h.nextElementSibling, any = false; while(n && !n.classList.contains('lgrp')){ if(!n.hidden) any = true; n = n.nextElementSibling; } h.hidden = !any; }); }
@@ -1540,7 +1554,7 @@ function diffForms(prev, next, k={}){
   return items;
 }
 function changesSinceLive(){ const live = loadLive(); return live ? diffForms(live, state) : null; }
-const crow = (c,i,cls='') => `<li class="${cls}" data-chg="${i}"><span class="ci chg">${icon(c.i,12)}</span><b>${esc(c.t)}</b><span>${esc(c.n)}</span></li>`;
+const crow = (c,i,cls='') => `<li class="${cls}" data-chg="${i}"><span class="ci chg">${icon(c.i,12)}</span><b>${esc(c.t)}${c.n?`<span class="sub2">${esc(c.n)}</span>`:''}</b></li>`;
 /* Shows what an import would change and what it would leave to fix before the form could be published, then applies it as one undo step. */
 function previewImport(next){
   const changes = diffForms(state, next, {field:f=>f.map||('label:'+f.label), screen:x=>x.title}); const cur = state; state = next; const iss = computeIssues(); state = cur; const SHOW = 10;
@@ -1557,7 +1571,7 @@ function ago(t){ const m = Math.round((Date.now()-t)/60000); if(m<1) return 'jus
 function restoreVersion(v){ commit(()=>{ state = {...state, name:v.name, brand:clone(v.brand), style:clone(v.style), styles:clone(v.styles), sections:clone(v.sections)}; state.sections[0].open = true; sel = {kind:'screen', id:state.sections[0].screens[0]?.id}; }); applyBrand(); $('#formName').textContent = state.name; toast(`Restored ${v.rev}`, 'ok'); }
 function openHistory(){ const vs = loadVersions(); const live = liveRev();
   modal(`<div class="mh"><h2>Version history</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
-    <div class="mb">${vs.length ? `<ul class="checklist">${vs.map((v,i)=>`<li><span class="ci ${v.rev===live?'ok':'chg'}">${icon(v.rev===live?'i-check':'i-send',12)}</span><b>${esc(v.note||'No release note')}<span class="sub2">${v.rev} · ${ago(v.at)}${v.rev===live?' · live now':''}</span></b><button class="btn sm" data-restore="${i}">Restore</button></li>`).join('')}</ul>` : `<div class="empty"><b>No versions yet</b>Every publish is kept here.</div>`}</div>`,
+    <div class="mb">${vs.length ? `<ul class="checklist">${vs.map((v,i)=>`<li><span class="ci ${v.rev===live?'ok':'chg'}">${icon(v.rev===live?'i-check':'i-send',12)}</span><b>${esc(v.note||'No release note')}<span class="sub2 mono">${v.rev} · ${ago(v.at)}${v.rev===live?' · live now':''}</span></b><button class="btn sm" data-restore="${i}">Restore</button></li>`).join('')}</ul>` : `<div class="empty"><b>No versions yet</b>Every publish is kept here.</div>`}</div>`,
     m => { m.addEventListener('click', e => { const b = e.target.closest('[data-restore]'); if(!b) return; const v = vs[+b.dataset.restore]; closeModal(); setTimeout(()=>confirm2(`Restore ${v.rev}?`, 'Your draft becomes this version. Undo is available afterwards.', 'Restore', ()=>restoreVersion(v)), 160); }); });
 }
 function openPublish(){
