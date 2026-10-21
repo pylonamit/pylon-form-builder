@@ -242,6 +242,13 @@ button.pill{transition:background var(--fast),color var(--fast)}button.pill:hove
 .fw .fx button.del:hover{background:var(--err-soft);color:var(--err)}
 .fw.sel-in .hd{animation:fadein var(--fast) var(--ease)}
 .fl{display:flex;align-items:baseline;gap:8px;font-weight:500;font-size:14px;margin-bottom:8px;color:var(--ft1)}
+/* Label, help text and option text edit in place on the selected field. The box only appears on hover and focus. */
+.ce{border-radius:var(--r0);padding:0 2px;margin:0 -2px;min-width:1ch;transition:box-shadow var(--fast),background var(--fast)}
+.ce:empty::before{content:attr(data-ph);color:var(--ft3);font-weight:400}
+.stage[data-mode="edit"] .fw.sel .ce{cursor:text}
+.stage[data-mode="edit"] .fw.sel .ce:hover{box-shadow:inset 0 0 0 1px var(--fl2)}
+.ce:focus{outline:0;box-shadow:inset 0 0 0 1.5px var(--sel),0 0 0 3px var(--sel-ring);background:var(--fp)}
+.fw.sel .fd.ce:empty{display:block}
 .fl .optl{color:var(--ft3);font-weight:400;font-size:13px}
 .fd{color:var(--ft2);font-size:13px;margin:-4px 0 8px}
 .ferr{display:flex;align-items:center;gap:6px;color:var(--err);font-size:13px;margin-top:8px;animation:scrin var(--med) var(--ease)}
@@ -473,7 +480,7 @@ textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background
 .checklist li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--rs);background:var(--panel-2)}
 .checklist li.clk{cursor:pointer;transition:background var(--fast)}.checklist li.clk:hover{background:var(--ink-soft)}
 .checklist .ci{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none}
-.checklist .ci.ok{background:var(--ok)}.checklist .ci.warn{background:var(--warn)}
+.checklist .ci.ok{background:var(--ok)}.checklist .ci.warn{background:var(--warn)}.checklist .ci.chg{background:var(--ink-soft-2);color:var(--t2)}
 .checklist b{font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .checklist span{color:var(--t3);font-size:12px;flex:none}
 .ctxmenu{position:fixed;z-index:45;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh-3);padding:4px;display:none;animation:pop var(--fast) var(--ease)}
@@ -539,7 +546,7 @@ textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background
   [data-tip]::after{display:none}
   .choice:hover{border-color:var(--fl2)}
 }
-@media (max-width:560px){.g2,.g3{grid-template-columns:1fr}.shortcuts{grid-template-columns:1fr}.topbar .seg button{padding:0 10px}.topbar .seg button svg,#publishBtn svg,.name-btn svg{display:none}#publishBtn{padding:0 12px}.typegrid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){#dockExit{width:32px;padding:0;font-size:0;gap:0}.g2,.g3{grid-template-columns:1fr}.shortcuts{grid-template-columns:1fr}.topbar .seg button{padding:0 10px}.topbar .seg button svg,#publishBtn svg,.name-btn svg{display:none}#publishBtn{padding:0 12px}.typegrid{grid-template-columns:1fr 1fr}}
 /* Touch: 40px tree rows, and every small control gets an invisible hit area of at least 40px. */
 @media (pointer:coarse){
   .row,.row.fld,.row.sect{height:40px}
@@ -561,6 +568,7 @@ textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background
 <symbol id="i-arrow-up" viewBox="0 0 16 16"><path d="M8 13V3M4 7l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-arrow-down" viewBox="0 0 16 16"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-minus" viewBox="0 0 16 16"><path d="M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+<symbol id="i-person" viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 14a5.5 5.5 0 0111 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
 <symbol id="i-chev-r" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
 <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
@@ -682,6 +690,7 @@ textarea.code{font-family:var(--mono);font-size:12px;min-height:240px;background
       <span class="sep ed"></span>
       <button id="dockCmd" class="ed" data-tip="Commands  ⌘K" aria-label="Commands"><svg width="16" height="16"><use href="#i-cmd"/></svg></button>
       <button id="dockRestart" class="ts" data-tip="Start over" aria-label="Start over"><svg width="16" height="16"><use href="#i-refresh"/></svg></button>
+      <button id="dockPersona" class="ts wide" aria-haspopup="menu"><svg width="16" height="16"><use href="#i-person"/></svg><span id="dockPersonaL">Start as…</span></button>
       <span class="sep ts"></span>
       <button id="dockExit" class="ts wide" aria-label="Back to editing"><svg width="16" height="16"><use href="#i-cursor"/></svg>Back to editing</button>
     </div>
@@ -798,7 +807,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 
 let state = load() || seed();
 let sel = { kind:'field', id: state.sections[0].screens[0].fields[0]?.id };
-const ui = { mode:'edit', device:'desktop', tab:'form', zoom:1, query:'', dirty:false, testIdx:0, answers:{}, codeFmt:'form', errors:{} };
+const ui = { mode:'edit', device:'desktop', tab:'form', zoom:1, query:'', dirty:false, testIdx:0, answers:{}, codeFmt:'form', errors:{}, persona:'blank' };
 const prefs = loadPrefs();
 const history = { past:[], future:[], limit:100 };
 
@@ -878,14 +887,16 @@ function renderTree(){
    Render: canvas
    ============================================================ */
 function passes(conds){ if(!conds?.length) return true; return conds.every(c => { const src = allFields().find(x=>x.map===c.field); const v = src ? ui.answers[src.id] : undefined; const has = Array.isArray(v) ? v.length>0 : (v!=null && v!==''); if(c.op==='equals') return Array.isArray(v) ? v.includes(c.value) : v===c.value; if(c.op==='not_equals') return Array.isArray(v) ? !v.includes(c.value) : v!==c.value; if(c.op==='answered') return has; if(c.op==='empty') return !has; return true; }); }
-function testScreens(){ return allScreens().filter(s => passes(s.conditions)); }
+/* A screen whose every field is hidden is skipped, as a borrower would never see it; a screen with no fields at all still shows. */
+function testScreens(){ return allScreens().filter(s => passes(s.conditions) && (!s.fields.length || s.fields.some(f => passes(f.conditions)))); }
 function appStyle(t){ const a = t?.appearance||{}; const st = t?.styleRef ? state.styles.find(s=>s.id===t.styleRef)?.appearance||{} : {}; const m = {...st, ...a}; const css=[]; if(m.font && m.font!=='inherit') css.push(`font-family:${FONTS[m.font]?.css||'inherit'}`); if(m.weight&&m.weight!=='inherit') css.push(`font-weight:${m.weight}`); if(m.size) css.push(`font-size:${m.size}px`); if(m.align&&m.align!=='inherit') css.push(`text-align:${m.align}`); if(m.cText) css.push(`color:${m.cText}`); if(m.radius) css.push(`--field-radius:${m.radius}px`); return css.join(';'); }
 function preview(f){
   const err = ui.errors[f.id];
   switch(f.type){
     case 'choice': case 'multi': {
       const list = fieldOptions(f); if(!list.length) return `<div class="empty" style="border-color:var(--fl2);color:var(--ft3)">No options yet — add some in the inspector.</div>`;
-      return `<div class="choices">${list.map((o,i)=>{ const on = ui.mode==='test' ? (f.type==='multi' ? (ui.answers[f.id]||[]).includes(o.value) : ui.answers[f.id]===o.value) : (i===0 && f.type==='choice'); const ic = f.icons?.[i] ? `<span class="ci">${icon(f.icons[i],18)}</span>` : ''; return `<div class="choice ${f.type==='multi'?'multi':''} ${on?'on':''}" data-opt="${esc(o.value)}" data-fid="${f.id}" role="${f.type==='multi'?'checkbox':'radio'}" aria-checked="${on}" tabindex="0">${ic}<span class="ct">${esc(o.label)}</span><span class="ck">${icon('i-check',12)}</span></div>`; }).join('')}</div>`;
+      const ed = ui.mode==='edit' && !f.optsrc && sel.kind==='field' && sel.id===f.id ? 'contenteditable="true" spellcheck="false"' : '';
+      return `<div class="choices">${list.map((o,i)=>{ const on = ui.mode==='test' ? (f.type==='multi' ? (ui.answers[f.id]||[]).includes(o.value) : ui.answers[f.id]===o.value) : (i===0 && f.type==='choice'); const ic = f.icons?.[i] ? `<span class="ci">${icon(f.icons[i],18)}</span>` : ''; return `<div class="choice ${f.type==='multi'?'multi':''} ${on?'on':''}" data-opt="${esc(o.value)}" data-fid="${f.id}" role="${f.type==='multi'?'checkbox':'radio'}" aria-checked="${on}" tabindex="0">${ic}<span class="ct ce" data-edit="opt" data-oid="${o.id}" data-ph="Option" ${ed}>${esc(o.label)}</span><span class="ck">${icon('i-check',12)}</span></div>`; }).join('')}</div>`;
     }
     case 'yesno': { const v = ui.mode==='test' ? ui.answers[f.id] : 'yes'; return `<div class="yesno"><div class="choice ${v==='yes'?'on':''}" data-opt="yes" data-fid="${f.id}" role="radio" aria-checked="${v==='yes'}" tabindex="0"><span class="ct">Yes</span></div><div class="choice ${v==='no'?'on':''}" data-opt="no" data-fid="${f.id}" role="radio" aria-checked="${v==='no'}" tabindex="0"><span class="ct">No</span></div></div>`; }
     case 'select': { const list = fieldOptions(f); if(ui.mode==='test') return `<div class="inp" style="padding:0"><select data-fid="${f.id}" style="flex:1;height:100%;border:0;background:transparent;padding:0 14px;color:var(--ft1);font:inherit;outline:0;appearance:none"><option value="">Select…</option>${list.map(o=>`<option value="${esc(o.value)}" ${ui.answers[f.id]===o.value?'selected':''}>${esc(o.label)}</option>`).join('')}</select>${icon('i-chev',14)}<span style="width:14px"></span></div>`; return `<div class="inp" style="justify-content:space-between"><span>${list.length?`Select… <span style="font-size:12px">(${list.length})</span>`:'Select…'}</span>${icon('i-chev',14)}</div>`; }
@@ -935,11 +946,11 @@ function renderCanvas(o={}){
   el.innerHTML = html;
 }
 function fieldWrap(f){
-  const s = ui.mode==='edit' && sel.kind==='field' && sel.id===f.id; const err = ui.errors[f.id];
+  const s = ui.mode==='edit' && sel.kind==='field' && sel.id===f.id; const err = ui.errors[f.id]; const ed = s ? 'contenteditable="true" spellcheck="false"' : '';
   return `<div class="fw ${s?'sel':''} ${s&&ui.selAnim===f.id?'sel-in':''} ${err?'err':''}" data-fid="${f.id}" tabindex="${ui.mode==='edit'?0:-1}" style="${appStyle(f)}">
     <div class="hd"><span class="tag">${TYPES[f.type].label}${f.conditions?.length?' · conditional':''}</span><div class="fx"><button data-act="up" data-tip="Move up" aria-label="Move up">${icon('i-arrow-up')}</button><button data-act="dup" data-tip="Duplicate" aria-label="Duplicate">${icon('i-copy')}</button><button class="del" data-act="del" data-tip="Delete" aria-label="Delete">${icon('i-trash')}</button></div></div>
-    <div class="fl"><span>${esc(f.label)}</span>${f.required?'':'<span class="optl">Optional</span>'}</div>
-    ${f.description?`<div class="fd">${esc(f.description)}</div>`:''}
+    <div class="fl"><span class="ce" data-edit="label" data-ph="Question" ${ed}>${esc(f.label)}</span>${f.required?'':'<span class="optl">Optional</span>'}</div>
+    ${f.description||s?`<div class="fd ce" data-edit="description" data-ph="Add help text" ${ed}>${esc(f.description)}</div>`:''}
     ${preview(f)}
     ${err?`<div class="ferr">${icon('i-warn')}${esc(err)}</div>`:''}
   </div>`;
@@ -1159,13 +1170,19 @@ screenEl.addEventListener('click', e => {
   const ch = e.target.closest('.choice');
   if(ch && ui.mode==='test'){ const fid = ch.dataset.fid, v = ch.dataset.opt; const f = allFields().find(x=>x.id===fid); if(f.type==='multi'){ const cur = new Set(ui.answers[fid]||[]); cur.has(v)?cur.delete(v):cur.add(v); ui.answers[fid]=[...cur]; } else ui.answers[fid]=v; delete ui.errors[fid]; renderCanvas(); return; }
   if(ui.mode!=='edit') return;
-  const fw = e.target.closest('.fw'); if(fw){ if(sel.kind==='field' && sel.id===fw.dataset.fid){ if(overlayRight()) $('#app').dataset.right='open'; return; } select({kind:'field', id:fw.dataset.fid}, {inspect:overlayRight()}); return; }
+  const fw = e.target.closest('.fw'); if(fw){ if(sel.kind==='field' && sel.id===fw.dataset.fid){ if(overlayRight() && !e.target.closest('[data-edit]')) $('#app').dataset.right='open'; return; } const ce = e.target.closest('[data-edit]'); select({kind:'field', id:fw.dataset.fid}, {inspect:overlayRight()}); if(ce && !overlayRight()) focusEdit(fw.dataset.fid, ce.dataset.edit, ce.dataset.oid); return; }
   const t = e.target.closest('.scr-title'); if(t && !(sel.kind==='screen' && sel.id===t.dataset.sid)){ sel = {kind:'screen', id:t.dataset.sid}; renderTree(); renderInspector(); $$('.fw.sel', screenEl).forEach(x=>x.classList.remove('sel')); t.classList.add('sel'); }
 });
-screenEl.addEventListener('input', e => { if(ui.mode!=='test') return; const inp = e.target.closest('[data-fid]'); if(inp){ ui.answers[inp.dataset.fid]=inp.value; if(ui.errors[inp.dataset.fid]){ delete ui.errors[inp.dataset.fid]; inp.closest('.fw')?.classList.remove('err'); inp.closest('.fw')?.querySelector('.ferr')?.remove(); } } });
+/* In-place edits mirror into the inspector while typing and commit on blur; Escape restores the stored value. */
+function focusEdit(fid, key, oid){ const n = $(`.fw[data-fid="${fid}"] [data-edit="${key}"]${oid?`[data-oid="${oid}"]`:''}`, screenEl); if(!n) return; n.focus(); const r = document.createRange(); r.selectNodeContents(n); r.collapse(false); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(r); }
+function editTarget(el){ const f = find({kind:'field', id:el.closest('.fw')?.dataset.fid})?.field; if(!f) return null; const k = el.dataset.edit; const o = k==='opt' ? f.options.find(x=>x.id===el.dataset.oid) : null; if(k==='opt' && !o) return null; return {f, k, o, stored: k==='label' ? f.label : k==='description' ? (f.description||'') : o.label}; }
+function commitEdit(el){ const t = editTarget(el); if(!t) return; const v = el.textContent.trim(); if(v===t.stored) return; if(!v && t.k!=='description'){ el.textContent = t.stored; return; } commit(()=>{ if(t.k==='label') t.f.label = v; else if(t.k==='description') t.f.description = v; else { t.o.label = v; if(!t.o.manual) t.o.value = slug(v); } }); }
+function mirrorEdit(el){ const t = editTarget(el); if(!t) return; const v = el.textContent; const box = t.k==='opt' ? $(`#optList .opt[data-oid="${t.o.id}"] [data-opt=label]`) : $(`#insp [data-bind="${t.k}"]`); if(box) box.value = v; }
+screenEl.addEventListener('paste', e => { if(!e.target.isContentEditable) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData.getData('text/plain')||'').replace(/\s*\n\s*/g,' ')); });
+screenEl.addEventListener('input', e => { if(ui.mode==='edit'){ const ce = e.target.closest?.('[data-edit]'); if(ce) mirrorEdit(ce); return; } const inp = e.target.closest('[data-fid]'); if(inp){ ui.answers[inp.dataset.fid]=inp.value; if(ui.errors[inp.dataset.fid]){ delete ui.errors[inp.dataset.fid]; inp.closest('.fw')?.classList.remove('err'); inp.closest('.fw')?.querySelector('.ferr')?.remove(); } } });
 screenEl.addEventListener('change', e => { if(ui.mode==='test' && e.target.tagName==='SELECT'){ ui.answers[e.target.dataset.fid]=e.target.value; delete ui.errors[e.target.dataset.fid]; } });
-screenEl.addEventListener('focusout', e => { const t = e.target.closest?.('.scr-title'); if(t && ui.mode==='edit'){ const s = find({kind:'screen',id:t.dataset.sid})?.screen; const v = t.textContent.trim(); if(s && v && v!==s.title){ commit(()=>{ s.title=v; }); } else if(s) t.textContent = s.title; } });
-screenEl.addEventListener('keydown', e => { if(e.target.classList.contains('scr-title') && e.key==='Enter'){ e.preventDefault(); e.target.blur(); } if(e.target.classList.contains('scr-title') && e.key==='Escape'){ e.target.textContent = find({kind:'screen',id:e.target.dataset.sid}).screen.title; e.target.blur(); } if(e.target.classList.contains('fw') && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); select({kind:'field',id:e.target.dataset.fid}); } if(e.target.classList.contains('choice') && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); e.target.click(); } });
+screenEl.addEventListener('focusout', e => { const ce = e.target.closest?.('[data-edit]'); if(ce && ui.mode==='edit'){ commitEdit(ce); return; } const t = e.target.closest?.('.scr-title'); if(t && ui.mode==='edit'){ const s = find({kind:'screen',id:t.dataset.sid})?.screen; const v = t.textContent.trim(); if(s && v && v!==s.title){ commit(()=>{ s.title=v; }); } else if(s) t.textContent = s.title; } });
+screenEl.addEventListener('keydown', e => { const ce = e.target.closest?.('[data-edit]'); if(ce){ if(e.key==='Enter'){ e.preventDefault(); ce.blur(); } if(e.key==='Escape'){ e.stopPropagation(); const t = editTarget(ce); if(t) ce.textContent = t.stored; mirrorEdit(ce); ce.blur(); } return; } if(e.target.classList.contains('scr-title') && e.key==='Enter'){ e.preventDefault(); e.target.blur(); } if(e.target.classList.contains('scr-title') && e.key==='Escape'){ e.target.textContent = find({kind:'screen',id:e.target.dataset.sid}).screen.title; e.target.blur(); } if(e.target.classList.contains('fw') && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); select({kind:'field',id:e.target.dataset.fid}); } if(e.target.classList.contains('choice') && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); e.target.click(); } });
 function validate(f, v){ const has = Array.isArray(v) ? v.length>0 : (v!=null && String(v).trim()!==''); if(f.required && !has) return 'This one’s required.'; if(!has) return null; const s = String(v).trim();
   if(f.validation==='email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) return 'Enter a valid email.'; if(f.validation==='phone' && s.replace(/\D/g,'').length<10) return 'Enter a 10-digit phone number.'; if(f.validation==='zip' && !/^\d{5}(-\d{4})?$/.test(s)) return 'Enter a 5-digit ZIP.'; if(f.validation==='positive' && !(parseFloat(s.replace(/[,$]/g,''))>0)) return 'Enter an amount above zero.'; if(f.validation==='adult'){ const d = new Date(s); if(isNaN(d)) return 'Enter a date like 04/12/1990.'; if((Date.now()-d)/31557600000 < 18) return 'Must be 18 or older.'; } return null; }
 function nextScreen(){ const screens = testScreens(); const scr = screens[ui.testIdx]; if(!scr) return; ui.errors={}; for(const f of scr.fields.filter(f=>passes(f.conditions))){ const err = validate(f, ui.answers[f.id]); if(err) ui.errors[f.id]=err; }
@@ -1176,7 +1193,7 @@ $('#crumb').addEventListener('click', e => { const g = e.target.closest('[data-g
 
 /* mode / device / zoom / theme / panels */
 function segThumb(segEl){ const on = $('[aria-pressed="true"]', segEl); const th = $('.thumb', segEl); if(!on||!th) return; th.style.width = on.offsetWidth+'px'; th.style.transform = `translateX(${on.offsetLeft - th.offsetLeft}px)`; }
-function setMode(m, o={}){ if(ui.mode===m) return; ui.mode=m; ui.done=false; ui.errors={}; $('#stage').dataset.mode=m; $('#app').dataset.mode=m; $('#modeEdit').setAttribute('aria-pressed', m==='edit'); $('#modeTest').setAttribute('aria-pressed', m==='test'); segThumb($('#modeSeg')); if(m==='test'){ const cur = currentScreen(); ui.testIdx = Math.max(0, testScreens().indexOf(cur)); } if(!o.silent){ renderCanvas({anim:true}); if(m==='test') toast('Test mode — answer as a borrower would','',null,{icon:'i-eye'}); } }
+function setMode(m, o={}){ if(ui.mode===m) return; ui.mode=m; ui.done=false; ui.errors={}; $('#stage').dataset.mode=m; $('#app').dataset.mode=m; $('#modeEdit').setAttribute('aria-pressed', m==='edit'); $('#modeTest').setAttribute('aria-pressed', m==='test'); segThumb($('#modeSeg')); if(m==='test'){ const cur = currentScreen(); ui.testIdx = Math.max(0, testScreens().indexOf(cur)); $('#dockPersonaL').textContent = ui.persona==='blank' ? 'Start as…' : PERSONAS.find(p=>p.k===ui.persona).l; } if(!o.silent){ renderCanvas({anim:true}); if(m==='test') toast('Test mode — answer as a borrower would','',null,{icon:'i-eye'}); } }
 $('#modeEdit').onclick = ()=>setMode('edit'); $('#modeTest').onclick = ()=>setMode('test');
 function setDevice(d){ ui.device=d; prefs.device=d; savePrefs(); $('#stage').dataset.device=d; $$('#devSeg button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.dev===d)); segThumb($('#devSeg')); fitZoom(); }
 $('#devSeg').addEventListener('click', e => { const b = e.target.closest('[data-dev]'); if(b) setDevice(b.dataset.dev); });
@@ -1309,7 +1326,7 @@ function toast(text, kind='', action, o={}){ const t = document.createElement('d
 function openPalette(){
   const cmds = [
     {g:'Create', l:'Add field', i:'i-plus', fn:()=>openTypePicker()}, {g:'Create', l:'Add screen', i:'i-screen', fn:()=>addScreen()}, {g:'Create', l:'Add section', i:'i-section', fn:addSection}, {g:'Create', l:'From question library', i:'i-library', fn:openLibrary}, {g:'Form', l:'Saved forms', i:'i-folder', fn:openForms}, {g:'Form', l:'New form', i:'i-file-plus', fn:newForm},
-    {g:'Form', l:'Save draft', i:'i-check', k:'⌘S', fn:saveDraft}, {g:'Form', l:'Review & publish', i:'i-send', fn:openPublish}, {g:'Form', l:'Edit form JSON', i:'i-code', fn:openJson}, {g:'Form', l:'Rename form', i:'i-text', fn:()=>$('#nameBtn').click()}, {g:'Form', l:'Reset to sample form', i:'i-reset', fn:()=>confirm2('Reset form?','Replaces everything with the sample loan application. Undo is available.','Reset',()=>{ commit(()=>{ state=seed(); sel={kind:'field',id:state.sections[0].screens[0].fields[0].id}; }); applyBrand(); toast('Sample form restored'); }, true)},
+    {g:'Form', l:'Save draft', i:'i-check', k:'⌘S', fn:saveDraft}, {g:'Form', l:'Review & publish', i:'i-send', fn:openPublish}, {g:'View', l:'Test as a persona', i:'i-person', fn:()=>{ setMode('test'); $('#dockPersona').click(); }}, {g:'Form', l:'Edit form JSON', i:'i-code', fn:openJson}, {g:'Form', l:'Rename form', i:'i-text', fn:()=>$('#nameBtn').click()}, {g:'Form', l:'Reset to sample form', i:'i-reset', fn:()=>confirm2('Reset form?','Replaces everything with the sample loan application. Undo is available.','Reset',()=>{ commit(()=>{ state=seed(); sel={kind:'field',id:state.sections[0].screens[0].fields[0].id}; }); applyBrand(); toast('Sample form restored'); }, true)},
     {g:'View', l:ui.mode==='edit'?'Test the form':'Back to editing', i:'i-eye', k:'P', fn:()=>setMode(ui.mode==='edit'?'test':'edit')}, {g:'View', l:'Phone preview', i:'i-mobile', k:'M', fn:()=>setDevice('mobile')}, {g:'View', l:'Desktop preview', i:'i-desktop', fn:()=>setDevice('desktop')}, {g:'View', l:'Toggle editor theme', i:'i-moon', fn:()=>$('#themeBtn').click()}, {g:'View', l:'Toggle structure panel', i:'i-sidebar', k:'⌘\\', fn:()=>togglePanel('left')}, {g:'View', l:'Toggle inspector', i:'i-sidebar-r', k:'⌘/', fn:()=>togglePanel('right')}, {g:'View', l:'Keyboard shortcuts', i:'i-keyboard', k:'?', fn:openShortcuts},
     {g:'Settings', l:'Brand', i:'i-brand', fn:()=>{ ui.tab='brand'; renderInspector(); }}, {g:'Settings', l:'Style', i:'i-style', fn:()=>{ ui.tab='style'; renderInspector(); }},
     ...allScreens().map(s=>({g:'Screens', l:s.title, i:'i-screen', fn:()=>select({kind:'screen',id:s.id})})),
@@ -1328,22 +1345,78 @@ function openShortcuts(){ const rows = [['⌘K','Commands'],['/','Search questio
    Save / publish / JSON / library / forms
    ============================================================ */
 function saveDraft(){ persist(); markSaved(); toast('Draft saved','ok'); }
+const LIVE = LS+'.live';
+function loadLive(){ try{ return JSON.parse(localStorage.getItem(LIVE)); }catch(e){ return null; } }
+function liveRev(){ const l = loadLive(); return l ? l.rev : null; }
+function hash(str){ let h = 5381; for(let i=0;i<str.length;i++) h = ((h<<5)+h+str.charCodeAt(i))|0; return (h>>>0).toString(16).padStart(8,'0').slice(0,7); }
+/* Field and screen ids are stable across edits, so the diff pairs by id; an import regenerates ids and shows as remove + add. */
+function changesSinceLive(){
+  const live = loadLive(); if(!live) return null;
+  const items = []; const go = (kind,id,focus) => ({kind,id,focus});
+  const ls = live.sections.flatMap(x=>x.screens), lf = ls.flatMap(x=>x.fields); const L = Object.fromEntries(lf.map(f=>[f.id,f])), LS_ = Object.fromEntries(ls.map(x=>[x.id,x]));
+  const cur = allFields(), curS = allScreens(); const C = Object.fromEntries(cur.map(f=>[f.id,f])), CS = Object.fromEntries(curS.map(x=>[x.id,x]));
+  const J = v => JSON.stringify(v ?? null);
+  for(const x of curS){ const o = LS_[x.id]; if(!o) items.push({t:'Screen added', n:x.title, i:'i-plus', go:go('screen',x.id)}); else if(o.title!==x.title) items.push({t:'Screen renamed', n:`${o.title} → ${x.title}`, i:'i-text', go:go('screen',x.id)}); else if(J(o.conditions)!==J(x.conditions)) items.push({t:'Screen rules changed', n:x.title, i:'i-branch', go:go('screen',x.id)}); }
+  for(const x of ls) if(!CS[x.id]) items.push({t:'Screen removed', n:x.title, i:'i-x'});
+  for(const f of cur){ const o = L[f.id]; const g = go('field',f.id);
+    if(!o){ items.push({t:'Added', n:f.label, i:'i-plus', go:g}); continue; }
+    if(o.label!==f.label) items.push({t:'Renamed', n:`${o.label} → ${f.label}`, i:'i-text', go:g});
+    if(o.type!==f.type) items.push({t:'Type changed', n:`${f.label} · ${TYPES[o.type]?.label} → ${TYPES[f.type]?.label}`, i:'i-form', go:g});
+    if(!!o.required!==!!f.required) items.push({t:f.required?'Now required':'Now optional', n:f.label, i:'i-info', go:g});
+    if((o.map||'')!==(f.map||'')) items.push({t:'Saved elsewhere', n:`${f.label} · ${o.map||'unsaved'} → ${f.map||'unsaved'}`, i:'i-link', go:go('field',f.id,'map')});
+    if(J(o.conditions)!==J(f.conditions)) items.push({t:'Rules changed', n:f.label, i:'i-branch', go:g});
+    if(J((o.options||[]).map(x=>[x.label,x.value]))!==J((f.options||[]).map(x=>[x.label,x.value])) || (o.optsrc||'')!==(f.optsrc||'')) items.push({t:'Options changed', n:f.label, i:'i-choice', go:g});
+    if((o.description||'')!==(f.description||'')) items.push({t:'Help text changed', n:f.label, i:'i-para', go:g});
+  }
+  for(const f of lf) if(!C[f.id]) items.push({t:'Removed', n:f.label, i:'i-x'});
+  if(J([live.brand, live.style, live.styles])!==J([state.brand, state.style, state.styles])) items.push({t:'Brand or style changed', n:'', i:'i-brand', tab:'brand'});
+  if(live.name!==state.name) items.push({t:'Form renamed', n:`${live.name} → ${state.name}`, i:'i-text'});
+  return items;
+}
+function lum(hex){ const h = hex.replace('#',''); const [r,g,b] = [0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)); return 0.2126*r+0.7152*g+0.0722*b; }
+/* Each check names its first offender so the row can jump straight to it. Rules may only depend on answers given earlier in the form. */
+function publishChecks(){
+  const fields = allFields(), screens = allScreens(); const order = new Map(); screens.forEach((s,si)=>{ order.set(s.id, si*1000); s.fields.forEach((f,fi)=>order.set(f.id, si*1000+fi+1)); });
+  const byMap = {}; fields.forEach(f=>{ if(f.map) (byMap[f.map] ||= []).push(f); });
+  const srcPos = m => { const f = byMap[m]?.[0]; return f ? order.get(f.id) : null; };
+  const blank = fields.filter(f=>!f.label.trim()||f.label==='New question');
+  const unmapped = fields.filter(f=>!f.map);
+  const shared = Object.values(byMap).filter(a=>a.length>1).map(a=>a[1]);
+  const emptyScreens = screens.filter(s=>!s.fields.length);
+  const badOpts = fields.filter(f=>HAS_OPTS(f.type) && !f.optsrc && (f.options.length<2 || f.options.some(o=>!o.label.trim())));
+  const dupVals = fields.filter(f=>HAS_OPTS(f.type) && !f.optsrc && new Set(f.options.map(o=>o.value)).size!==f.options.length);
+  const owners = [...screens.map(s=>({o:s, kind:'screen'})), ...fields.map(f=>({o:f, kind:'field'}))];
+  const brokenRule = owners.find(({o}) => (o.conditions||[]).some(c => !byMap[c.field] || byMap[c.field].every(x=>x.id===o.id) || (['equals','not_equals'].includes(c.op) && !c.value)));
+  const lateRule = owners.find(({o,kind}) => (o.conditions||[]).some(c => { const sp = srcPos(c.field); return sp!=null && sp >= (kind==='screen' ? order.get(o.id)+1 : order.get(o.id)); }));
+  const longLabel = fields.filter(f=>f.label.length>90);
+  const brand = state.brand.color==='custom' ? state.brand.custom : BRAND[state.brand.color]||BRAND.ink; const bl = lum(brand), fl = contrast(brand)==='#ffffff' ? 1 : 0; const ratio = (Math.max(bl,fl)+.05)/(Math.min(bl,fl)+.05);
+  const g = (x, focus) => x ? {kind: x.kind || 'field', id: (x.o||x).id, focus} : null;
+  return [
+    {ok:!blank.length, l:'Every field has a real label', s: blank.length?`${blank.length} to name`:'OK', go:g(blank[0],'label')},
+    {ok:!unmapped.length, l:'Every field is saved to the loan file', s: unmapped.length?`${unmapped.length} unsaved`:'OK', go:g(unmapped[0],'map')},
+    {ok:!shared.length, l:'Each loan-file field is saved by one question', s: shared.length?`${shared.length} shared`:'OK', go:g(shared[0],'map')},
+    {ok:!emptyScreens.length, l:'No empty screens', s: emptyScreens.length?`${emptyScreens.length} empty`:'OK', go: emptyScreens[0] ? {kind:'screen', id:emptyScreens[0].id} : null},
+    {ok:!badOpts.length, l:'Choice fields have 2+ complete options', s: badOpts.length?`${badOpts.length} to fix`:'OK', go:g(badOpts[0])},
+    {ok:!dupVals.length, l:'Option values are unique within a field', s: dupVals.length?`${dupVals.length} to fix`:'OK', go:g(dupVals[0])},
+    {ok:!brokenRule, l:'Every rule points at a live answer', s: brokenRule?'Broken rule':'OK', go:g(brokenRule)},
+    {ok:!lateRule, l:'Rules only depend on earlier answers', s: lateRule?'Out of order':'OK', go:g(lateRule)},
+    {ok:!longLabel.length, l:'Labels are under 90 characters', s: longLabel.length?`${longLabel.length} long`:'OK', go:g(longLabel[0],'label')},
+    {ok:ratio>=4.5, l:'Brand color passes contrast on buttons', s: ratio>=4.5?'OK':`${ratio.toFixed(1)}:1`, tab:'brand'},
+  ].sort((a,b)=>a.ok-b.ok);
+}
 function openPublish(){
-  const fields = allFields(); const unmapped = fields.filter(f=>!f.map); const emptyScreens = allScreens().filter(s=>!s.fields.length); const badOpts = fields.filter(f=>HAS_OPTS(f.type) && !f.optsrc && (f.options.length<2 || f.options.some(o=>!o.label.trim()))); const blank = fields.filter(f=>!f.label.trim()||f.label==='New question');
-  const checks = [
-    {ok:!blank.length, l:'Every field has a real label', s: blank.length?`${blank.length} to name`:'OK', go: blank[0]},
-    {ok:!unmapped.length, l:'Every field is saved to the loan file', s: unmapped.length?`${unmapped.length} unsaved`:'OK', go: unmapped[0]},
-    {ok:!emptyScreens.length, l:'No empty screens', s: emptyScreens.length?`${emptyScreens.length} empty`:'OK', goS: emptyScreens[0]},
-    {ok:!badOpts.length, l:'Choice fields have 2+ complete options', s: badOpts.length?`${badOpts.length} to fix`:'OK', go: badOpts[0]},
-    {ok:true, l:'Brand color passes contrast on buttons', s:'OK'},
-  ];
-  const ready = checks.every(c=>c.ok);
-  modal(`<div class="mh"><h2>Review &amp; publish</h2><span class="pill mono">rev 5361ace</span><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
-    <div class="mb"><p style="margin:0;color:var(--t2)">Goes live for new borrowers. Applications already in progress keep their current version.</p>
-      <ul class="checklist">${checks.map((c,i)=>`<li class="${c.ok?'':'clk'}" data-chk="${i}"><span class="ci ${c.ok?'ok':'warn'}">${icon(c.ok?'i-check':'i-warn',12)}</span><b>${c.l}</b><span>${c.s}</span></li>`).join('')}</ul>
+  const checks = publishChecks(); const ready = checks.every(c=>c.ok);
+  const changes = changesSinceLive(); const first = changes===null; const none = changes && !changes.length; const SHOW = 8;
+  const row = (c,i,cls) => `<li class="${cls}" data-i="${i}"><span class="ci ${c.ok===false?'warn':c.ok?'ok':'chg'}">${icon(c.i || (c.ok?'i-check':'i-warn'),12)}</span><b>${esc(c.l || c.t)}</b><span>${esc(c.s || c.n)}</span></li>`;
+  modal(`<div class="mh"><h2>Review &amp; publish</h2>${liveRev()?`<span class="pill mono">live ${liveRev()}</span>`:''}<button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
+    <div class="mb">
+      <div class="f"><label>${first?'First publish':none?'Changes since live':`Changes since live · ${changes.length}`}</label>
+        ${first ? `<div class="empty"><b>Nothing is live yet</b>Publishing makes the whole form available to new borrowers.</div>` : none ? `<div class="empty"><b>Up to date</b>The draft matches what borrowers see.</div>` : `<ul class="checklist">${changes.slice(0,SHOW).map((c,i)=>row(c,i,c.go||c.tab?'clk':'')).join('')}${changes.length>SHOW?`<li><span class="ci chg">${icon('i-more',12)}</span><b>${changes.length-SHOW} more</b></li>`:''}</ul>`}</div>
+      <div class="f"><label>Checks${ready?'':` · ${checks.filter(c=>!c.ok).length} to fix`}</label><ul class="checklist">${checks.map((c,i)=>row(c,i,c.ok?'':'clk')).join('')}</ul></div>
       <div class="f"><label>Release note</label><input class="ctl" id="relNote" placeholder="What changed? Optional"></div></div>
-    <div class="mf"><button class="btn" data-close>Not yet</button><button class="btn primary" id="doPublish">${ready?'Publish':'Publish anyway'}</button></div>`,
-    m => { m.addEventListener('click', e=>{ const li = e.target.closest('li.clk'); if(!li) return; const c = checks[+li.dataset.chk]; closeModal(); if(c.go) select({kind:'field',id:c.go.id},{focus: c===checks[0]?'label':c===checks[1]?'map':undefined}); else if(c.goS) select({kind:'screen',id:c.goS.id}); }); $('#doPublish', m).onclick = ()=>{ closeModal(); persist(); markSaved(); toast('Published — live for new borrowers','ok'); }; });
+    <div class="mf"><button class="btn" data-close>Not yet</button><button class="btn primary" id="doPublish" ${none?'disabled':''}>${none?'Up to date':ready?'Publish':'Publish anyway'}</button></div>`,
+    m => { m.addEventListener('click', e=>{ const li = e.target.closest('li.clk'); if(!li) return; const list = li.closest('ul').previousElementSibling?.textContent.startsWith('Changes') ? changes : checks; const c = list[+li.dataset.i]; closeModal(); if(c.go) select({kind:c.go.kind, id:c.go.id}, {focus:c.go.focus}); else if(c.tab){ ui.tab = c.tab; renderInspector(); } });
+      $('#doPublish', m).onclick = ()=>{ const snap = clone({name:state.name, brand:state.brand, style:state.style, styles:state.styles, sections:state.sections}); snap.rev = hash(JSON.stringify(snap)); snap.at = Date.now(); snap.note = $('#relNote', m).value.trim(); try{ localStorage.setItem(LIVE, JSON.stringify(snap)); }catch(e){} closeModal(); persist(); markSaved(); toast(`Published ${snap.rev} — live for new borrowers`,'ok'); }; });
 }
 function openJson(){
   modal(`<div class="mh"><h2>Form JSON</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div>
@@ -1358,7 +1431,17 @@ function openLibrary(){ const scr = currentScreen(); if(!scr) return toast('Pick
 function openForms(){ const forms=[['Loan application','5361ace','Live · edited today',true],['Loan application (Spanish)','a91c0f2','Draft · 3 days ago'],['HELOC intake','77be104','Draft · last week']]; modal(`<div class="mh"><h2>Saved forms</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div><div class="mb"><ul class="checklist">${forms.map(([n,r,s,cur])=>`<li class="clk"><span class="ico" style="color:var(--t3)">${icon('i-form')}</span><b>${n}</b><span class="pill mono" style="margin-right:6px">${r}</span><span>${cur?'Open now':s}</span></li>`).join('')}</ul><div class="note">${icon('i-info')}<span>Only this form is stored in the prototype.</span></div></div>`, m=>m.addEventListener('click',e=>{ if(e.target.closest('li')){ closeModal(); toast('Only this form is available in the prototype'); } })); }
 function newForm(){ modal(`<div class="mh"><h2>New form</h2><button class="btn ghost icon sm" data-close aria-label="Close">${icon('i-x')}</button></div><div class="mb"><div class="f"><label>Name</label><input class="ctl" id="newName" placeholder="e.g. HELOC intake"></div><div class="f"><label>Start from</label>${selectHtml('tpl','blank',[['blank','Blank'],['copy','Copy of this form'],['sample','Sample loan application']])}</div></div><div class="mf"><button class="btn" data-close>Cancel</button><button class="btn primary" id="mkForm">Create</button></div>`, m=>{ const go=()=>{ const n=$('#newName').value.trim()||'Untitled form'; const tpl=$('[data-bind=tpl]',m).value; closeModal(); commit(()=>{ if(tpl==='blank'){ state={name:n, brand:clone(state.brand), style:clone(state.style), styles:[], sections:[SEC('Getting started',[S('Welcome',[])],{open:true})]}; } else if(tpl==='sample'){ state=seed(); state.name=n; } else { state=clone(state); state.name=n; } sel={kind:'screen',id:state.sections[0].screens[0].id}; }); $('#formName').textContent=state.name; applyBrand(); toast(`Created “${n}”`,'ok'); }; $('#mkForm',m).onclick=go; $('#newName').onkeydown=e=>{ if(e.key==='Enter') go(); }; }); }
 $('#dockCmd').onclick = openPalette;
-$('#dockRestart').onclick = ()=>{ ui.done=false; ui.testIdx=0; ui.answers={}; ui.errors={}; renderCanvas({anim:true}); };
+/* A persona pre-answers the branching questions, keyed by loan-file path so it survives relabelling. */
+const PERSONAS = [
+  {k:'blank', l:'Blank', a:{}},
+  {k:'buyer', l:'Home buyer', a:{'property.purpose':'buy_a_home','property.search_stage':'under_contract','property.type':'single_family','property.occupancy':'primary_residence','borrower.current.status':'rent','income.status':'employed'}},
+  {k:'refi', l:'Refinance', a:{'property.purpose':'refinance','property.occupancy':'primary_residence','borrower.current.status':'own','income.status':'employed'}},
+  {k:'investor', l:'Investor', a:{'property.purpose':'buy_a_home','property.search_stage':'actively_looking','property.type':'multi_family','property.occupancy':'investment','borrower.current.status':'own','income.status':'self_employed'}},
+  {k:'entity', l:'Business entity', a:{'property.purpose':'buy_a_home','property.occupancy':'investment','borrower.entity':'yes','entity.type':'llc','income.status':'self_employed'}},
+];
+function startAs(k, o={}){ const p = PERSONAS.find(x=>x.k===k) || PERSONAS[0]; ui.persona = p.k; ui.answers = {}; for(const [m,v] of Object.entries(p.a)){ const f = allFields().find(x=>x.map===m); if(f) ui.answers[f.id] = v; } ui.errors = {}; ui.done = false; const cur = currentScreen(); ui.testIdx = o.fromStart ? 0 : Math.max(0, testScreens().indexOf(cur)); $('#dockPersonaL').textContent = p.k==='blank' ? 'Start as…' : p.l; renderCanvas({anim:true}); $('#stageScroll').scrollTo({top:0}); }
+$('#dockRestart').onclick = ()=>startAs(ui.persona, {fromStart:true});
+$('#dockPersona').onclick = e => showMenu(PERSONAS.map(p=>({l:p.l, i:p.k===ui.persona?'i-check':'i-person', fn:()=>startAs(p.k)})), e.currentTarget);
 $('#dockExit').onclick = ()=>setMode('edit');
 $('#dockUndo').onclick = undo; $('#dockRedo').onclick = redo;
 $('#savePill').onclick = saveDraft; $('#publishBtn').onclick = openPublish;
